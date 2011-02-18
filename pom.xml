@@ -25,25 +25,24 @@
         </license>
     </licenses>
 
-    <!--
-  <scm>
-    <connection>scm:git:git://github.com/chrisichris/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:git@github.com:chrisichris/${project.artifactId}.git</developerConnection>
-    <url>http://github.com/chrisichris/${project.artifactId}/</url>
-  </scm>
+    <scm>
+        <connection>scm:git:git://github.com/chrisichris/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:git@github.com:chrisichris/${project.artifactId}.git</developerConnection>
+        <url>http://github.com/chrisichris/${project.artifactId}/</url>
+    </scm>
 
-  <issueManagement>
-    <system>github</system>
-    <url>http://github.com/chrisichris/${project.artifactId}/issues#issue/</url>
-  </issueManagement>
+    <issueManagement>
+        <system>github</system>
+        <url>http://github.com/chrisichris/${project.artifactId}/issues#issue/</url>
+    </issueManagement>
 
-  <mailingLists>
-    <mailingList>
-      <name>yeti-maven-plugin</name>
-      <archive>http://groups.google.com/group/yeti-lang</archive>
-      <post>http://groups.google.com/group/yeti-lang</post>
-    </mailingList>
-  </mailingLists> -->
+    <mailingLists>
+        <mailingList>
+            <name>yeti-maven-plugin</name>
+            <archive>http://groups.google.com/group/yeti-lang</archive>
+            <post>http://groups.google.com/group/yeti-lang</post>
+        </mailingList>
+    </mailingLists>
 
     <distributionManagement>
         <repository>
@@ -266,7 +265,7 @@
             </plugin>
         </plugins>
     </reporting>
-  
+
     <build>
         <plugins>
             <plugin>
