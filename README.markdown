@@ -107,9 +107,9 @@ Than there are two profiles :
 1.  the compile profile - which is activated by default - defines the compile and testCompile goals.
 	This means that without any further configuration, Maven will compile any yeti modules you include 
 	in ./src/main/yeti/**/*.yeti, ./src/main/java/**/*.yeti
-	and ./src/test/yeti/**/*.yeti and ./src/test/yeti/**/*.yeti during the compile testCompile phase.
+	and ./src/test/yeti/**/*.yeti and ./src/test/yeti/**/*.yeti directories.
 
-2.  the def profile on the other hand does not compile the yeti-source but includes the sources themselves
+2.  the second provile - dev - on the other hand does not compile the yeti-source but includes the sources themselves
 	in the classpath.
 	
 	This profile should be mainly used in development ie if you use the repl.
@@ -123,14 +123,14 @@ Than there are two profiles :
 
 With the yeti:repl goal you can start a console. 
 
-If the yeti sources are not compiled the sources are compiled by the repl on the fly, which means the repl does only compile
+If the yeti sources are not compiled in the compile pahse, the sources are compiled by the repl on the fly, which means the repl does only compile
 those sources for which modules are explicitly loaded.
 
 If you use the above example pom than you will start the repl normally with
 
->	mvn -P def yeti:repl
+	mvn -P dev yeti:repl
 
-By default the repl contains the compile, test and runtime classpath. You can control this with the 
+By default the repl contains the compile, test and runtime classpath. You can control which classpaht is included with the 
 useTestClasspath (-Dyeti.maven.repl.useTestClasspath=true) and useRuntimeClasspath (-Dyeti.maven.repl.useRuntimeClasspath) 
 properties.
 
@@ -139,7 +139,7 @@ The console is actually split into two different repls:
 1.  the main repl is used for try-out/evalute code etc from your project. All commands entered at the prompt
 	without a "-" prefix are evaluated in this repl. 
 
-    There is nothing realy special about this repl it is like a normal yeti repl.
+    There is nothing realy special about this repl. It is like a normal yeti repl.
 	
 	--help shows a help.
 
@@ -155,24 +155,26 @@ Example:
 
 ### The shell REPL
 
-On the repl each line of code which starts with "-" is executed in the shell-repl.
+The shell repl is more like a build repl from which you can ie reload the main repl if sources changed, specify
+the source diretories for the main repl, evaluate some code in an extra repl, monitor source changes to trigger tests etc
+
+To execute code in the shell repl prefix the code expressions with "-"
 
 #### The shell module "s"
 
 The shell repl contains a special preloaded module "s" (for shell). This module contains
 different functions and variables which are useful during development. Ie to reload the first
-repl if sources have changed type 
+repl if sources have changed type at the prompt:
 
 	yeti>-s.refresh()
 
-in the repl.
 
 The shell module has the following fields:
 
-- var sourceDirs is list<string> : this are the dirs of the yeit sources. From there the sources are loaded
-but only if they are not compiled on the classpaht. sourcedirs are als monitored.
+- var sourceDirs is list<string> : this are the dirs of the yeti sources. From there the sources are loaded
+but only if they are not compiled on the classpath. 
 
--   addMonitor is string -> (()->()) -> (): you can add a function which is triggered when the content of sourcedirs change
+-   addMonitor is string -> (()->()) -> (): you can add a function which is triggered when the content of the sourceDirs change
 the first argument is the name of the monitor the second the monitor. Each monitor is given automatically an id.
 To see all monitor ids use showMonitors()
 	
@@ -180,7 +182,7 @@ To see all monitor ids use showMonitors()
 
 - removeMonitor is number -> (): remove the monitor with the given id number (to see the id use showMonitors())
 
-- activateMonitor is number -> boolean -> (): instead of removing you can als temp deactivate a monitor with
+- activateMonitor is number -> boolean -> (): instead of removing you can als temporaraly deactivate a monitor with
 the given id-number: `-s.activateMonitor id false` and later reactivate with `-s.activateMonitor id true`.
 
 - showMonitors is () -> () : prints a list of all monitors and their ids
@@ -189,7 +191,7 @@ the given id-number: `-s.activateMonitor id false` and later reactivate with `-s
 If you want to pick up changes to sources inthe main repl you have to call this method ie `-s.refresh()` 
 
 - var refreshCode is string : here code can be set which is called each time in a new repl when refresh is
-called. 
+called. The code is called before user input is expected. 
 
 - branche is string -> () : executes the given yeti-code string in a new (non interactive repl)
 after the executions the new repl is closed again. The execution happens on the same thread.
@@ -201,9 +203,9 @@ after the executions the new repl is closed again. The execution happens on the 
 You can also specify in the maven pom.xml commands which are executed line by line in the shell-repl 
 right after it is started but before user input is expected. 
 
-This is useful ie to preload certain modules beside the shell module.
+This is useful ie to preload modules beside the shell module.
 
-The commands are specifiec in the configuration of the yeti-maven-plugin in the `<commands>` tag. Ie in the maven pom.xml 
+The commands are specified in the configuration of the yeti-maven-plugin in the `<commands>` tag. Ie in the maven pom.xml 
 
 	<plugin>
 		<groupId>org.yeti</groupId>
@@ -227,7 +229,7 @@ Note the code of the shell and repl is in the [yeticl project](https://github.co
 
 The plugin can also copy source files to the output directory.
 
-Use the yeti:add-source goal to add all *.yeti sources in the main source directories (ie ./src/main/java or ./src/main/yeti) 
+Use the yeti:add-source goal to add all *.yeti sources in the main source directories (ie ./src/main/java and ./src/main/yeti) 
 to the output directory.
 
 ## Yetidoc 
