@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <properties>
+    <title>maven-scala-plugin</title>
+    <authors>
+      <person name="David Bernard" />
+    </authors>
+  </properties>
+  <body>
+    <h1>Compiling Yeti sources</h1>
+
+    <span>Prerequis : <a href="usage.html">common usages</a></span>
+
+    <section name="Compiling">
+      <p>
+        Place yeti sources files in :
+        <source>src/main/scala</source> or
+        <source>src/main/java</source>
+      </p>
+      <p>
+        Place scala test sources files in :
+        <source>src/test/scala</source> or
+        <source>src/test/java</source>
+
+      </p>
+      <p>
+        Then use the standard maven phases :
+        <source>
+          <![CDATA[
+# compile only
+mvn compile
+# or compile and test
+mvn test
+# or compile, test and package
+mvn package
+       ]]>
+        </source>
+      </p>
+      <p>
+        Or the plugin specifics goal :
+        <source>
+          <![CDATA[
+# compile source
+mvn yeti:compile
+# compile test
+mvn yeti:testCompile
+       ]]>
+        </source>
+      </p>
+    </section>
+    <section name="Increasing memory">
+      <source>
+        <![CDATA[
+<project>
+  ...
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <jvmArgs>
+            <jvmArg>-Xms64m</jvmArg>
+            <jvmArg>-Xmx1024m</jvmArg>
+          </jvmArgs>
+        </configuration>
+      </plugin>
+  ...
+</project>
+            ]]>
+      </source>
+    </section>
+
+    <section name="Compiler Arguments">
+        <p>It is common to wish to send arguments to the yeti compiler during compilation of your project.  To do so, make use of the args configuration parameter like so:</p>
+        <source><![CDATA[
+<project>
+  ...
+  <plugin>
+    <groupId>org.scala-tools</groupId>
+    <artifactId>maven-scala-plugin</artifactId>
+      <configuration>
+        <args>
+          <arg>-unchecked</arg>
+          <arg>-deprecation</arg>
+          <arg>-explaintypes</arg>
+        </args>
+    </configuration>
+  </plugin>
+  ...
+</project>
+                ]]></source>
+    </section>
+  </body>
+</document>

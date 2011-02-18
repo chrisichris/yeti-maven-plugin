@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <properties>
+    <title>Example</title>
+    <authors>
+      <person name="David Bernard"/>
+    </authors>
+  </properties>
+  <body>
+    <h1>Running a yeti console</h1>
+
+    <section name="Running">
+      <p>
+        You can start a console with a classpath set with the project dependencies (compile, test, runtime) and compiler classes (main and test):
+        <ol>
+        <li>compile your code (running the console doesn't force to compile:
+          <source>mvn test-compile #or mvn test</source>
+        </li>
+        <li>run the console :    
+          <source>mvn yeti:console</source>
+        </li>
+        <li>when the yeti prompt is shown, play :
+        </li>
+        </ol>
+      </p>
+    </section>
+
+    <section name="pre/post action">
+    <p>If you want to always run some commands in the console at the start, and don't want to type it at every startup.
+    Then you can specify them in the commands configruation of the plugin. The lines of the are separated by ;;</p>
+    <p>I'll show an example </p>
+    <p><source><![CDATA[
+      <plugin>
+        <groupId>org.yeti</groupId>
+        <artifactId>yeti-maven-plugin</artifactId>
+        ...
+        <configuration>
+          <commands>
+              smod = load org.some.module;; //loads some module (note ;; which means to execute this command)
+              println "some test"
+          </commands>
+        </configuration>
+      </plugin>
+      ]]></source></p>
+    
+    </section>
+    
+  </body>
+</document>

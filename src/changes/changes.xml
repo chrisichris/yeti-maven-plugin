@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Changes</title>
+    <author>chrisichris</author>
+  </properties>
+  <body>
+    <release version="0.1" date="2011-02-09" description="Initial release">
+      <action dev="chrischris" type="add">the initial code</action>
+    </release>
+    <!--
+    <release version="2.15.2" date="2011-02-06" description="">
+      <action dev="chrischris" type="add">the initial code</action>
+      <action dev="chrischris" type="fix">the initial code</action>
+      <action dev="chrischris" type="update">the initial code</action>
+      <action dev="chrischris" type="remove">the initial code</action>
+    </release> -->
+  </body>
+</document>

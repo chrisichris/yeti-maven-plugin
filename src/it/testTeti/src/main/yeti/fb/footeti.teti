@@ -1,0 +1,6 @@
+module fb.footeti;
+
+do y:
+    write x = println x;
+%>Write something here<%
+done

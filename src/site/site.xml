@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="${project.name}">
+  <bannerLeft>
+    <name>${project.name}</name>
+    <href>${project.url}</href>
+  </bannerLeft>
+  <bannerRight>
+    <name>Yeti-lang</name>
+    <href>http://mth.github.com/yeti/</href>
+  </bannerRight>
+  <publishDate position="left" format="yyyy-MM-dd HH:mm" />
+  <version position="left"/>
+  <poweredBy>
+    <logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
+  </poweredBy>
+
+  <body>
+    <links>
+      <item name="FAQ" href="faq.html"/>
+      <item name="Mailing-list" href="http://groups.google.com/group/maven-and-scala"/>
+    </links>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html" />
+      <item name="Goals" href="plugin-info.html" />
+      <item name="Usage" href="usage.html" />
+      <item name="Mailing-list" href="http://groups.google.com/group/maven-and-scala"/>
+      <item name="FAQ" href="faq.html" />
+      <!--<item name="Wiki" href="http://wiki.github.com/davidB/maven-scala-plugin/"/>
+      <item name="Mailing-list" href="http://groups.google.com/group/yeti-lang"/>-->
+    </menu>
+    <menu name="Examples">
+      <item name="Compiling" href="example_compile.html" />
+      <item name="Yeti Console" href="example_console.html" />
+    </menu>
+    <menu ref="reports" />
+    <menu ref="modules" />
+  </body>
+</project>

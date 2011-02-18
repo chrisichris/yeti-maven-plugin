@@ -1,0 +1,5 @@
+/// put module documentation here
+module fb.foo3;
+
+x = load fb2.foo2;
+"foo3";

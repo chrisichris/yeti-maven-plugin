@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Yeti Maven Plugin Frequently Asked Questions</title>
+		<authors>
+			<person name="Josh Suereth" />
+		</authors>
+	</properties>
+	<body>
+		<h1>Frequently Asked Questions</h1>
+		
+		<section name="Read-Eval-Print-Loop (aka scala:repl)">
+			<dl>
+				<dt>How do I start the repl?</dt>
+				<dd>call mvn yeti:repl.</dd>
+			</dl>
+		</section>
+	</body>
+</document>

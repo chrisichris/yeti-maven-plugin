@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>yeti-maven-plugin</title>
+        <authors>
+            <person name="Christian Essl"/>
+        </authors>
+    </properties>
+    <body>
+        <section name="yeti-maven-plugin">
+            <p>The yeti-maven-plugin is used for compiling/running yeti code in maven. </p>
+            <p>If there are problems please let us know.</p>
+        </section>
+        <section name="Requirements">
+            <ul>
+                <li>Maven 2.0.7</li>
+                <li>JDK 1.5</li>
+                <li><bold>No need to install <a href="http://mth.github.com/yeti/">yeti</a> !</bold></li>
+            </ul>
+        </section>
+       <p>Thanks to team from the <a href="http://scala-tools.org/mvnsites/maven-scala-plugin/index.html">maven-scala-plugin</a>.
+       This plugin is based on code from them.</p>
+    </body>
+</document>
