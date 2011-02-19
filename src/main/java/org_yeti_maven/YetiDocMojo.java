@@ -307,7 +307,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                 jcmd.addOption("-sd", MainHelper.toMultiPath(sourceDirPathes));
 
                 for (File x : sources) {
-                    jcmd.addArgs(x.getPath());
+                    jcmd.addArgs(x.getPath().replace(File.separatorChar, '/'));
                 }
                 jcmd.run(displayCmd);
             }
