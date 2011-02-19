@@ -161,22 +161,6 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
     protected void initFilters() throws Exception {
         prepareIncludes(includes, sendJavaToYetic);
-        if (!_filterPrinted && getLog().isInfoEnabled()) {
-            StringBuilder builder = new StringBuilder("includes = [");
-            for (String include : includes) {
-                builder.append(include).append(",");
-            }
-            builder.append("]");
-            getLog().info(builder.toString());
-
-            builder = new StringBuilder("excludes = [");
-            for (String exclude : excludes) {
-                builder.append(exclude).append(",");
-            }
-            builder.append("]");
-            getLog().info(builder.toString());
-            _filterPrinted = true;
-        }
     }
 
     /**
@@ -281,7 +265,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
         jcmd.addJvmArgs(jvmArgs);
 
         List<String> paths = project.getCompileClasspathElements();
-        paths.remove(project.getBuild().getOutputDirectory()); //remove output to avoid "error for" : error:  XXX is already defined as package XXX ... object XXX {
+        //paths.remove(project.getBuild().getOutputDirectory()); //remove output to avoid "error for" : error:  XXX is already defined as package XXX ... object XXX {
         jcmd.addOption("-cp", MainHelper.toMultiPath(paths));
         //jcmd.addOption("-sourcepath", sourceDir.getAbsolutePath());
         if (StringUtils.isEmpty(title)) {
