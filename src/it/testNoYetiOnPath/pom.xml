@@ -3,17 +3,18 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
     <groupId>org.yeti-maven-plugin</groupId>
-    <artifactId>testIncludeExcluces</artifactId>
+    <artifactId>testNoYetiOnPath</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <description>${project.artifactId}</description>
     <packaging>jar</packaging>
     <dependencies>
+        <!--
         <dependency>
             <groupId>org.yeti</groupId>
             <artifactId>yeti</artifactId>
             <version>${yeti.version.lastrelease}</version>
-        </dependency>
+        </dependency> -->
     </dependencies>
     <repositories>
         <repository>
@@ -44,15 +45,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <includes>
-                        <include>**/*.yeti</include>
-                        <include>**/TestClass.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

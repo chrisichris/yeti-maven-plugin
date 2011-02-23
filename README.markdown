@@ -14,7 +14,7 @@ The code of this plugin is heavily based on the mavan-scala-plugin. Thanks to th
  * yeti:doc
  * yeti:add-source
  
-## Getting started with Yeti and Maven
+## Getting started with Yeti and Maven - the detailed way
 
 To use this plugin and start working with yeti, start with a blank maven project and declare the plugin and
 add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed):
@@ -22,14 +22,7 @@ add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed)
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns ...>
 		....
-		<repositories>
-			...
-			<repository>
-				<id>chrisis.snapshots</id>
-				<name>chrisis-maven-repo</name>
-				<url>http://chrisichris.github.com/chrisis-maven-repo/snapshots</url>
-			</repository>
-		</repositories>
+
 		<pluginRepositories>
 			....
 			<pluginRepository>
@@ -38,103 +31,74 @@ add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed)
 				<url>http://chrisichris.github.com/chrisis-maven-repo/snapshots</url>
 			</pluginRepository>
 		</pluginRepositories>
-	   ....
-		<dependencies>
-			<dependency>
-				<groupId>org.yeti</groupId>
-				<artifactId>yeti</artifactId>
-				<version>0.1-SNAPSHOT</version>
-			</dependency>
-			......
-		</dependencies>
 		.....
-		<profiles>
-			<profile>
-				<id>compile</id>
-				<activation>
-					<activeByDefault>true</activeByDefault>
-				</activation>
-				<build>
-					<plugins>
-						<plugin>
-							<groupId>org.yeti</groupId>
-							<artifactId>yeti-maven-plugin</artifactId>
-							<version>0.1-SNAPSHOT</version>
-							<executions>
-								<execution>
-									<goals>
-										<goal>compile</goal>
-										<goal>testCompile</goal>
-									</goals>
-								</execution>
-							</executions>
-						</plugin>
-					</plugins>
-				</build>
-				.....
-			</profile>
-			<profile>
-				<id>dev</id>
-				<build>
-					<plugins>
-						<plugin>
-							<groupId>org.yeti</groupId>
-							<artifactId>yeti-maven-plugin</artifactId>
-							<version>0.1-SNAPSHOT</version>
-							<executions>
-								<execution>
-									<goals>
-										<goal>add-source</goal>
-									</goals>
-								</execution>
-							</executions>
-						</plugin>
-						.....
-					</plugins>
-				</build>
-			</profile>
-			....
-		</profiles>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.yeti</groupId>
+					<artifactId>yeti-maven-plugin</artifactId>
+					<version>0.1-SNAPSHOT</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+								<goal>testCompile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
 		....
 	</project>
-
-First the repository for yeti and for the yeti-maven-plugin is defined.
-
-Next a dependency is added for the yeti jar.
-
-Than there are two profiles :
-
-1.  the compile profile - which is activated by default - defines the compile and testCompile goals.
-	This means that without any further configuration, Maven will compile any yeti modules you include 
-	in ./src/main/yeti/**/*.yeti, ./src/main/java/**/*.yeti
-	and ./src/test/yeti/**/*.yeti and ./src/test/yeti/**/*.yeti directories.
-
-2.  the second provile - dev - on the other hand does not compile the yeti-source but includes the sources themselves
-	in the classpath.
 	
-	This profile should be mainly used in development ie if you use the repl.
+This does the following:
+
+1.  add the repositorie for the yeti-plugin
+
+3.  configure the yeti plugin to compile yeti source during the compile and test-compile phases. 	
 	
-	The repl can in this case pick up any changes to the sources without restarting, because the sources
-    get compiled on the fly. This increaes development productivity a lot.
-	
-	A profile in maven is triggered with the -P option. Ie to start the repl use `mvn -P dev yeti:repl`
+You can put your yeti main sources in the `/src/main/java` and/or `/src/main/yeti` folders and 
+the test-sources in `/src/test/yeti` and/or `/src/test/java folders`. 
+
+`mvn compile` will compile them `mvn test-compile` will compile also the tests
+
+With the `yeti-compile` system-property you can turn compilation off and on. This is important when
+working with the repl because the repl can read (modified) sources directly if they are not compiled.
+
 
 ## REPL for Interactive Coding
 
 With the yeti:repl goal you can start a console. 
 
-If the yeti sources are not compiled in the compile pahse, the sources are compiled by the repl on the fly, which means the repl does only compile
-those sources for which modules are explicitly loaded.
+If the yeti sources are not compiled, the sources are compiled by the repl on the fly, which means that 
 
-If you use the above example pom than you will start the repl normally with
+- the repl can pick up changes to sources with out restart/recompilation which gives much fast development cycles
 
-	mvn -P dev yeti:repl
+- and the repl does only compile those sources for which modules are explicitly loaded 
+  If you have changed other sources they do not have to compile to test other sources which do not depend on them.
+  
+  This is very useful for continous-compilation - which automatically compiles yeti code once you save it (see below)
 
-By default the repl contains the compile, test and runtime classpath. You can control which classpaht is included with the 
+Therefore you will nearly always start the repl without compiling the yeti sources first (but still compile the java sources).
+
+The best way to do this is with the `-Dyeti-compile=false` from the command line when invoking mvn:
+
+	mvn -Dyeti-compile=false clean compile yeti:repl
+
+This will clean and compile the project but without compiling yeti sources and it will start than the repl
+
+### REPL classpath
+
+By default the repl contains the compile, test and runtime classpath. 
+
+You can control which classpaht is included with the 
 useTestClasspath (-Dyeti.maven.repl.useTestClasspath=true) and useRuntimeClasspath (-Dyeti.maven.repl.useRuntimeClasspath) 
 properties.
 
-The console is actually split into two different repls:
+### Main and Shell REPL
+
+The console you see when running the yeti:repl goal is actually used to control two different repls:
 
 1.  the main repl is used for try-out/evalute code etc from your project. All commands entered at the prompt
 	without a "-" prefix are evaluated in this repl. 
@@ -144,21 +108,48 @@ The console is actually split into two different repls:
 	--help shows a help.
 
 2.  the second repl the shell repl is more like a build repl from which you can ie reload the main repl if sources changed, specify
-	the source diretories for the main repl, evaluate some code in an extra repl, monitor source changes to trigger tests etc
+	the source diretories for the main repl, evaluate some code in an extra separate repl, monitor source changes to trigger tests etc
 
 	To execute code in the second repl prefix the code expressions with "-"
 
+Both repls are strictly seperated they use different classloaders for the srouce-modules and so do not share source-modules or state (but run in the same vm).
+They can also not communicate. 	
+	
 Example:
 	
-	yeti>1+1 //this code is evaluated in the main repl
-	yeti>-1+1 //this code is evalutaed in the shell repl
+	yeti>y=1+1 //this code is evaluated in the main repl
+	yeti>-y=1+2 //this code is evalutaed in the shell repl
+	yeti>y
+	2
+	yeti>-y
+	3
 
-### The shell REPL
+### The shell REPL and continous compilation
 
 The shell repl is more like a build repl from which you can ie reload the main repl if sources changed, specify
 the source diretories for the main repl, evaluate some code in an extra repl, monitor source changes to trigger tests etc
 
 To execute code in the shell repl prefix the code expressions with "-"
+
+#### Continous Compilation
+
+When typing yeti-code it is very handy if it gets countinously checked in the background when you save the source-file (this is simlar to
+what ide do with java-code).
+
+To do this you start the repl and ad a monitor to the shell and load the module you are currently developing
+
+	mvn -Dyeti-compile=false clean compile yeti:repl
+	....
+	yeti>-s.addMonitor "recompile" \(branche "load fullQualifiedNameOfModuleYourWorkOn");
+
+Here you first start the repl (note that the yeti sources are not compiled) and than you add a monitor to the shell. The monitor
+gets executed each time a source-file changes. "recompile" is the name of the monitor the montior itself is a function and this
+case `brachen "load fullQualifiedNameOfModuleYourWorkOn"` means that the load command will be executed in an extra seperated-repl.
+The command will load the module and compile it on the fly (each time you change the sources).
+
+To stop the monitor use `-s.showMonitors ()` this will print all current monitors with their name and id. Use the id
+to call either `-s.activateMonitor id false` to temporarily deactivate the monitor or `-s.removeMonitor id` to remove the 
+monitor. 
 
 #### The shell module "s"
 
@@ -167,7 +158,6 @@ different functions and variables which are useful during development. Ie to rel
 repl if sources have changed type at the prompt:
 
 	yeti>-s.refresh()
-
 
 The shell module has the following fields:
 
@@ -198,7 +188,7 @@ after the executions the new repl is closed again. The execution happens on the 
 
 - _start : do not call this method. This is for implementation only 
 
-#### Executing commands in the shell-repl before user-input
+#### Executing predefined commands in the shell-repl before user-input
 
 You can also specify in the maven pom.xml commands which are executed line by line in the shell-repl 
 right after it is started but before user input is expected. 

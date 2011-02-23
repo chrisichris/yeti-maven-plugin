@@ -50,6 +50,15 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
      */
     protected boolean sendJavaToYetic = false;
 
+
+    /**
+     * Enables/Disables compilation of yeti source.
+     *
+     * @parameter expression="${yeti-compile}"
+     *            default-value="true"
+     */
+    protected boolean yetiCompile = true;
+
     /**
      * A list of inclusion filters for the compiler.
      * ex :
@@ -182,6 +191,8 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
     @Override
     protected void doExecute() throws Exception {
+        if(! yetiCompile)
+                return;
         long t0 = System.currentTimeMillis();
         List<File> sourceDirs = getSourceDirectories();
         String[] sourceDirsA = new String[sourceDirs.size()];
