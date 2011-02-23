@@ -34,6 +34,7 @@ add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed)
 		.....
 		<build>
 			<plugins>
+				.....
 				<plugin>
 					<groupId>org.yeti</groupId>
 					<artifactId>yeti-maven-plugin</artifactId>
@@ -47,7 +48,9 @@ add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed)
 						</execution>
 					</executions>
 				</plugin>
+				.....
 			</plugins>
+			.....
 		</build>
 		....
 	</project>
@@ -119,9 +122,9 @@ Example:
 	
 	yeti>y=1+1 //this code is evaluated in the main repl
 	yeti>-y=1+2 //this code is evalutaed in the shell repl
-	yeti>y
+	yeti>println y
 	2
-	yeti>-y
+	yeti>-println y
 	3
 
 ### The shell REPL and continous compilation
@@ -140,11 +143,12 @@ To do this you start the repl and ad a monitor to the shell and load the module 
 
 	mvn -Dyeti-compile=false clean compile yeti:repl
 	....
-	yeti>-s.addMonitor "recompile" \(branche "load fullQualifiedNameOfModuleYourWorkOn");
+	yeti>-s.addMonitor "recompile" \(s.branche "load fullQualifiedNameOfModuleYourWorkOn");
 
 Here you first start the repl (note that the yeti sources are not compiled) and than you add a monitor to the shell. The monitor
-gets executed each time a source-file changes. "recompile" is the name of the monitor the montior itself is a function and this
-case `brachen "load fullQualifiedNameOfModuleYourWorkOn"` means that the load command will be executed in an extra seperated-repl.
+gets executed each time a source-file changes. "recompile" is the name of the monitor the montior itself is a function and in this
+case `s.branche "load fullQualifiedNameOfModuleYourWorkOn"` means that in a sperate repl the code given as string is executed. 
+The load command will be executed in an extra seperated-repl.
 The command will load the module and compile it on the fly (each time you change the sources).
 
 To stop the monitor use `-s.showMonitors ()` this will print all current monitors with their name and id. Use the id
