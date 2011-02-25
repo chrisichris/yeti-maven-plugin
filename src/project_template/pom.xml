@@ -39,7 +39,6 @@
     </dependencies>
 
     <build>
-        <finalName>yeb</finalName>
         <plugins>
             <plugin>
                 <groupId>org.yeti</groupId>

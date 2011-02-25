@@ -1,0 +1,7 @@
+module example.testImmediateCompile;
+
+t = load example.immediateCompile;
+
+if t != "this is no bug anymore" then failWith "wrong result \(t)" fi;
+
+"test immediateResult was ok"  
