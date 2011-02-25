@@ -6,6 +6,27 @@ as easy as possible.
 
 The code of this plugin is heavily based on the mavan-scala-plugin. Thanks to the maven-scala-plugin team.
 
+## Getting started with Yeti and Maven - the fastes way
+
+The easiest way to get started is to:
+
+1. download the `yeti-project-template.zip` file from the downlaods section (button at top-right). 
+2. unzip the file 
+3. rename the root directory (yeti-project-template) to the name you chose for your project
+4. change in the pom.xml file the content of the `<groupId>`, `<artifactId>` and `<name>` tags to what you chose for your project
+
+Now you have a full yeti project. Where you can add your yeti-code to src/main/yeti. 
+(There is already a file foomodule.yeti in the foo folder. You can use it as a template for your modules or
+just leave or delete it).
+
+To test your project 
+
+1.  from a shell prompt change into your project-directory `cd your-project-directory`
+2.  type `mvn compile`: this will compile your yeti code
+3.  type `mvn -Dyeti-compile=false clear compile yeti:repl` this will start the repl for your project 
+	(use `--quit` or `Ctrl-C` to stop the repl).
+
+
 ## Available goals
 
  * yeti:compile
@@ -13,8 +34,9 @@ The code of this plugin is heavily based on the mavan-scala-plugin. Thanks to th
  * yeti:repl
  * yeti:doc
  * yeti:add-source
+
  
-## Getting started with Yeti and Maven - the detailed way
+## Getting started with Yeti and Maven
 
 To use this plugin and start working with yeti, start with a blank maven project and declare the plugin and
 add a dependency on yeti in the maven pom.xml file. (The yeti jar is not needed):
@@ -96,7 +118,7 @@ This will clean and compile the project but without compiling yeti sources and i
 By default the repl contains the compile, test and runtime classpath. 
 
 You can control which classpaht is included with the 
-useTestClasspath (-Dyeti.maven.repl.useTestClasspath=true) and useRuntimeClasspath (-Dyeti.maven.repl.useRuntimeClasspath) 
+useTestClasspath (`-Dyeti.maven.repl.useTestClasspath=true`) and useRuntimeClasspath (`-Dyeti.maven.repl.useRuntimeClasspath`) 
 properties.
 
 ### Main and Shell REPL

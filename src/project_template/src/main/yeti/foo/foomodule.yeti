@@ -1,0 +1,7 @@
+module foo.foomodule;
+
+println "The foomodule in folder foo. Change or rename me";
+
+{
+    someFunction () = println "some function in foo module. Change or rename me",
+}
