@@ -9,9 +9,11 @@
     
     <fileSets>
         <fileSet>
+		
             <outputDirectory>yeti-project-template</outputDirectory>
             <directory>src/project_template</directory>
             <lineEnding>crlf</lineEnding>
+			<useDefaultExcludes>false</useDefaultExcludes>
             <!--
       <includes>
         <include>**/*</include>

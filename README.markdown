@@ -16,8 +16,8 @@ The easiest way to get started is to:
 4. change in the pom.xml file the content of the `<groupId>`, `<artifactId>` and `<name>` tags to what you chose for your project
 
 Now you have a full yeti project. Where you can add your yeti-code to src/main/yeti. 
-(There is already a file foomodule.yeti in the foo folder. You can use it as a template for your modules or
-just leave or delete it).
+(There are already example java and yeti files in the corresponding yeti and java folders in `example` packages. 
+You can use these as templates or delete them. They are not needed by the maven project.)
 
 To test your project 
 
