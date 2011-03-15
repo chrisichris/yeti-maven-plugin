@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.StringUtils;
  * Run the Yeti Repl with all the classes of the projects (dependencies and builded)
  *
  * @goal repl
- * @requiresDependencyResolution runtime
+ * @requiresDependencyResolution test
  * @execute phase="test-compile"
  * @inheritByDefault false
  * @requiresDirectInvocation true
