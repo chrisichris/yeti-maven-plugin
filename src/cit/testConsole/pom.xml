@@ -39,8 +39,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>add-source</goal>
-                            <goal>compile-pre-test</goal>
+                            <goal>compile</goal>
                             <goal>testCompile</goal>
                         </goals>
                     </execution>

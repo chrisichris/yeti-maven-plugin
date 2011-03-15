@@ -31,10 +31,12 @@ import org.codehaus.plexus.util.StringUtils;
  * Run the Yeti Repl with all the classes of the projects (dependencies and builded)
  *
  * @goal repl
- * @requiresDependencyResolution test
+ * @requiresDependencyResolution runtime
+ * @execute phase="test-compile"
  * @inheritByDefault false
  * @requiresDirectInvocation true
  * @executionStrategy once-per-session
+ * @description runs the yeti console repl
  */
 public class YetiReplMojo extends YetiMojoSupport {
 
