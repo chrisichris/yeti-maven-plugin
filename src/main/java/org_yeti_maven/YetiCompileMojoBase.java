@@ -60,6 +60,14 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
     protected boolean yetiCompile = true;
 
     /**
+     * Enables/Disables compilation of yeti source.
+     *
+     * @parameter expression="${yetic}"
+     *            default-value="true"
+     */
+    protected boolean yetiC = true;
+
+    /**
      * A list of inclusion filters for the compiler.
      * ex :
      * <pre>
@@ -191,7 +199,7 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
     @Override
     protected void doExecute() throws Exception {
-        if(! yetiCompile)
+        if(! (yetiCompile && yetiC ))
                 return;
         long t0 = System.currentTimeMillis();
         List<File> sourceDirs = getSourceDirectories();
