@@ -209,8 +209,8 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         }
 
         //prepare the compile classloader
+        Object compileInstance = null;
         Method compileMethod = null;
-        //Object sourceReader = null;
         ClassLoader compileClassLoader = null;
         {
             Set<String> classpath = new HashSet<String>();
@@ -235,9 +235,9 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
                 compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
 
                 //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
-                compileMethod = compileClassLoader.loadClass("yeti.lang.compiler.YeticlCompileCtxt")
-                        .getMethod("compileAll", String[].class, String[].class,String[].class,String.class);
-
+                Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
+                compileMethod = compileClass.getMethod("compileAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
+                compileInstance = compileClass.newInstance();
                 //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
                
 
@@ -269,7 +269,9 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         Thread.currentThread().setContextClassLoader(compileClassLoader);
         try{
 
-            compileMethod.invoke(null, classPath,sourceDirsA,sourceFiles,outputDir.getAbsolutePath());
+            String toPath = outputDir.getAbsolutePath();
+            toPath = (toPath.equals("") || toPath.endsWith("/")) ? toPath : toPath + "/";
+            compileMethod.invoke(compileInstance, classPath,sourceDirsA,false,sourceFiles,toPath);
 
         }catch(InvocationTargetException ex) {
             if(ex.getCause() instanceof Exception) {

@@ -9,11 +9,12 @@ assert file2.exists()
 def file3 = new File(basedir, 'target/classes/TestClass.class')
 assert file3.exists()
 
-def file4 = new File(basedir, 'target/site/yetidocs/fb$foo.html')
+def file4 = new File(basedir, 'target/site/yetidocs/fb.foo.html')
 assert file4.exists()
 
-def file5 = new File(basedir, 'target/site/yetidocs/fb2$foo2.html')
+def file5 = new File(basedir, 'target/site/yetidocs/fb2.foo2.html')
 assert file5.exists()
+
 
 
 return true

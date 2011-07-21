@@ -155,7 +155,8 @@ public class YetiReplMojo extends YetiMojoSupport {
         getLog().info("commands: "+commands+" \n\nis:"+cds);
         //load the yetishillutils
 
-        Method m = parentCl.loadClass("org.yeticl.YetiShellUtils").getMethod("evaluateLoop", ClassLoader.class,String[].class,String[].class);
-        m.invoke(null, parentCl,srcPathes,cds);
+        Class cl = parentCl.loadClass("org.yeticl.YetiCompileHelper");
+        Method m = cl.getMethod("shellEvaluateLoop", ClassLoader.class,String[].class,String[].class);
+        m.invoke(cl.newInstance(), parentCl,srcPathes,cds);
     }
 }

@@ -17,12 +17,18 @@ package org_yeti_maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.MavenReport;
@@ -104,7 +110,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
      */
     protected File sourceDir;
     /**
-     * Enables/Disables sending java source to the scala compiler.
+     * Enables/Disables sending java source to the yeti compiler.
      *
      * @parameter default-value="false"
      */
@@ -140,9 +146,9 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
     protected List<File> getSourceDirectories() throws Exception {
         List<String> sources = project.getCompileSourceRoots();
         //Quick fix in case the user has not added the "add-source" goal.
-        String scalaSourceDir = sourceDir.getCanonicalPath();
-        if (!sources.contains(scalaSourceDir)) {
-            sources.add(scalaSourceDir);
+        String yetiSourceDir = sourceDir.getCanonicalPath();
+        if (!sources.contains(yetiSourceDir)) {
+            sources.add(yetiSourceDir);
         }
         List<File> ret = new ArrayList<File>(sources.size());
         for (String path : sources) {
@@ -213,7 +219,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
     public String getDescription(@SuppressWarnings("unused") Locale locale) {
         if (StringUtils.isEmpty(description)) {
-            return "YetiDoc API documentation";
+            return "Yeti API documentation";
         }
         return description;
     }
@@ -281,48 +287,103 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                 return;
             }
 
+
+            long t0 = System.currentTimeMillis();
+
+            //The sourceDirs
+            List<File> sourceDirs = getSourceDirectories();
+            String[] sourceDirsA = new String[sourceDirs.size()];
+            for(int i= 0;i < sourceDirsA.length;i++) {
+                sourceDirsA[i] = sourceDirs.get(i).getPath();
+            }
+
+            //prepare the compile/doc classloader
+            Object compileInstance = null;
+            Method compileMethod = null;
+            ClassLoader compileClassLoader = null;
+            {
+                Set<String> classpath = new HashSet<String>();
+                addToClasspath(YETI_GROUPID, YETI_LIBRARY_ARTIFACTID, yetiVersion, classpath);
+                addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
+                classpath.addAll(project.getCompileClasspathElements());
+                String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
+
+                if(classPathUrls != null && classPathUrls.length > 0) {
+                    List urls = new ArrayList();
+                    for(int i=0;i < classPathUrls.length; i++) {
+                        try {
+                            urls.add(new File(classPathUrls[i]).toURI().toURL());
+                            if(displayCmd) {
+                                getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
+                            }
+                        } catch (MalformedURLException ex) {
+                            throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
+                        }
+                    }
+                    URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
+                    compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
+
+                    //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
+                    Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
+                    compileMethod = compileClass.getMethod("htmlDocAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
+                    compileInstance = compileClass.newInstance();
+                    //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
+
+
+                }else{
+                    getLog().error("No classpath this must not happen");
+                    throw new IllegalStateException("No classpath here");
+                }
+            }
+
+            List<File> sourceFilesC = findSourceFiles();
+            String[] sourceFiles = new String[sourceFilesC.size()];
+            for(int i= 0;i < sourceFiles.length;i++) {
+                sourceFiles[i] = sourceFilesC.get(i).getPath();
+            }
+
+            //Collection<String> classPathC =  getClasspathElements();
+            String[] classPath = new String[]{};
+
             File reportOutputDir = getReportOutputDirectory();
             if (!reportOutputDir.exists()) {
                 reportOutputDir.mkdirs();
             }
-            {
-                BasicArtifact artifact = new BasicArtifact();
-                artifact.artifactId = "yetidoc";
-                artifact.groupId = "org.yeti";
-                artifact.version = yetiVersion;
-                dependencies = new BasicArtifact[]{artifact};
-            }
 
-            List<File> sources = findSourceFiles();
-            if (sources.size() > 0) {
-                JavaMainCaller jcmd = getScalaCommand();
-
-                jcmd.addOption("-d", reportOutputDir.getAbsolutePath());
-
-                List<File> sourceDirs = getSourceDirectories();
-                List<String> sourceDirPathes = new ArrayList<String>();
-                for (File x : sourceDirs) {
-                    sourceDirPathes.add(x.getAbsolutePath());
+            if (getLog().isDebugEnabled()) {
+                for(File directory : sourceDirs) {
+                    getLog().debug(directory.getCanonicalPath());
                 }
-                jcmd.addOption("-sd", MainHelper.toMultiPath(sourceDirPathes));
-
-                for (File x : sources) {
-                    jcmd.addArgs(x.getPath().replace(File.separatorChar, '/'));
-                }
-                jcmd.run(displayCmd);
             }
 
-            /*
-            if (forceAggregate) {
-                aggregate(project);
-            } else {
-                // Mojo could not be run from parent after all its children
-                // So the aggregation will be run after the last child
-                tryAggregateUpper(project);
+            long t1 = System.currentTimeMillis();
+            getLog().info(String.format("Compiling %d source files to %s at %d", sourceFilesC.size(), reportOutputDir.getAbsolutePath(), t1));
+
+            ClassLoader oldL = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(compileClassLoader);
+            try{
+
+                String toPath = reportOutputDir.getAbsolutePath();
+                toPath = (toPath.equals("") || toPath.endsWith("/")) ? toPath : toPath + "/";
+                compileMethod.invoke(compileInstance, classPath,sourceDirsA,false,sourceFiles,toPath);
+
+            }catch(InvocationTargetException ex) {
+                if(ex.getCause() instanceof Exception) {
+                    Exception e = (Exception) ex.getCause();
+                    if("yeti.lang.compiler.CompileException".equals(e.getClass().getName()))
+                        throw new MojoExecutionException(e.getMessage());
+                    else
+                        throw e;
+                }else throw ex;
+            }finally{
+                Thread.currentThread().setContextClassLoader(oldL);
             }
-            */
-        } catch (MavenReportException exc) {
-            throw exc;
+
+            getLog().info(String.format("prepare-compile in %d s", (t1 - t0) / 1000));
+            getLog().info(String.format("compile in %d s", (System.currentTimeMillis() - t1) / 1000));
+
+
+ 
         } catch (RuntimeException exc) {
             throw exc;
         } catch (Exception exc) {

@@ -1,7 +1,9 @@
 module fb.footeti;
 
 do y:
-    writer x = println x;
-	writers = { u x = println x, e x = println x};
+    write x = println x;
+	writers = { e = write, u = write};
+	x = 1+1;
 %>Write something here<%
+	()
 done
