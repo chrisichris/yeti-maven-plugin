@@ -139,7 +139,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
      * @parameter
      */
     protected Set<String> excludes = new HashSet<String>();
-    private List<File> _sourceFiles;
+    private List<String> _sourceFiles;
     private boolean _filterPrinted = false;
 
     @SuppressWarnings("unchecked")
@@ -173,10 +173,10 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
      * @return
      * @throws Exception
      */
-    private List<File> findSourceFiles() {
+    private List<String> findSourceFiles() {
         if (_sourceFiles == null) {
             try {
-                List<File> sourceFiles = new ArrayList<File>();
+                List<String> sourceFiles = new ArrayList<String>();
                 List<File> sourceRootDirs = getSourceDirectories();
                 initFilters();
 
@@ -184,7 +184,8 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                     String[] tmpFiles = MainHelper.findFiles(dir, includes.toArray(new String[includes.size()]), excludes.toArray(new String[excludes.size()]));
                     for (String tmpLocalFile : tmpFiles) {
                         if (new File(dir,tmpLocalFile).exists()) {
-                            sourceFiles.add(new File(tmpLocalFile));
+                            String localName = tmpLocalFile.replace(File.separator, "/");
+                            sourceFiles.add(localName);
                         }
                     }
                 }
@@ -336,11 +337,8 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                 }
             }
 
-            List<File> sourceFilesC = findSourceFiles();
-            String[] sourceFiles = new String[sourceFilesC.size()];
-            for(int i= 0;i < sourceFiles.length;i++) {
-                sourceFiles[i] = sourceFilesC.get(i).getPath();
-            }
+            List<String> sourceFilesC = findSourceFiles();
+            String[] sourceFiles = sourceFilesC.toArray(new String[sourceFilesC.size()]);
 
             //Collection<String> classPathC =  getClasspathElements();
             String[] classPath = new String[]{};
