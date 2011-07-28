@@ -310,8 +310,6 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
             List<String> sourceFilesC = findSourceFiles();
             String[] sourceFiles = sourceFilesC.toArray(new String[sourceFilesC.size()]);
 
-            //Collection<String> classPathC =  getClasspathElements();
-            String[] classPath = new String[]{};
 
             File reportOutputDir = getReportOutputDirectory();
             if (!reportOutputDir.exists()) {
@@ -323,6 +321,8 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                     getLog().debug(directory.getCanonicalPath());
                 }
             }
+
+            String[] classPath = new String[]{};
 
             long t1 = System.currentTimeMillis();
             getLog().info(String.format("Compiling %d source files to %s at %d", sourceFilesC.size(), reportOutputDir.getAbsolutePath(), t1));

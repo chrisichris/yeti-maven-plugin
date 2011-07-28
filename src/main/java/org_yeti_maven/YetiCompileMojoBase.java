@@ -208,49 +208,49 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             sourceDirsA[i] = sourceDirs.get(i).getPath();
         }
 
+        //prepar the normal classpath
+        String[] classPath = new String[]{};
+        {
+            Set<String> classpath = new HashSet<String>();
+            addYetiLibToClassPath(classpath);
+            classpath.addAll(getClasspathElements());
+            classPath = classpath.toArray(new String[classpath.size()]);
+        }
+
         //prepare the compile classloader
         Object compileInstance = null;
         Method compileMethod = null;
-        ClassLoader compileClassLoader = null;
         {
             Set<String> classpath = new HashSet<String>();
             addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
             addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
-            classpath.addAll(getClasspathElements());
             String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
 
-            if(classPathUrls != null && classPathUrls.length > 0) {
-                List urls = new ArrayList();
-                for(int i=0;i < classPathUrls.length; i++) {
-                    try {
-                        urls.add(new File(classPathUrls[i]).toURI().toURL());
-                        if(displayCmd) {
-                            getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
-                        }
-                    } catch (MalformedURLException ex) {
-                        throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
+            List urls = new ArrayList();
+            for(int i=0;i < classPathUrls.length; i++) {
+                try {
+                    urls.add(new File(classPathUrls[i]).toURI().toURL());
+                    if(displayCmd) {
+                        getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
                     }
+                } catch (MalformedURLException ex) {
+                    throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
                 }
-                URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
-                compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
+            }
+            URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
+            ClassLoader compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
 
-                //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
-                Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
-                compileMethod = compileClass.getMethod("compileAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
-                compileInstance = compileClass.newInstance();
-                //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
+            //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
+            Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
+            compileMethod = compileClass.getMethod("compileAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
+            compileInstance = compileClass.newInstance();
+            //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
                
 
-            }else{
-                getLog().error("No classpath this must not happen");
-                throw new IllegalStateException("No classpath here");
-            }
         }
         
         List<String> sourceFilesC = findSourceFiles(sourceDirs);
         String[] sourceFiles = sourceFilesC.toArray(new String[sourceFilesC.size()]);
-        //Collection<String> classPathC =  getClasspathElements();
-        String[] classPath = new String[]{};
 
         File outputDir = normalize(getOutputDir());
         if (!outputDir.exists()) {
@@ -265,8 +265,6 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         long t1 = System.currentTimeMillis();
         getLog().info(String.format("Compiling %d source files to %s at %d", sourceFilesC.size(), outputDir.getAbsolutePath(), t1));
 
-        ClassLoader oldL = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(compileClassLoader);
         try{
 
             String toPath = outputDir.getAbsolutePath();
@@ -281,8 +279,6 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
                 else
                     throw e;
             }else throw ex;
-        }finally{
-            Thread.currentThread().setContextClassLoader(oldL);
         }
 
         getLog().info(String.format("prepare-compile in %d s", (t1 - t0) / 1000));

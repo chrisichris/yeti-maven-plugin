@@ -46,7 +46,7 @@ import org_yeti_maven_executions.MainHelper;
 public abstract class YetiMojoSupport extends AbstractMojo {
 
     public static final String YETI_GROUPID= "org.yeti";
-    public static final String YETI__ARTIFACTID= "yeti";
+    public static final String YETI_ARTIFACTID= "yeti";
     public static final String YETI_LIB_ARTIFACTID= "yeti-lib";
     public static final String YETI_MAVEN_ARTIFACTID="yeti-maven-plugin";
     public static final String YETICL_ARTIFACTID="yeticl";
@@ -335,7 +335,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     protected void addYetiLibToClassPath(Set<String> classpath) throws Exception {
         if(yetiFullJar){
-            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
+            addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, yetiVersion, classpath);
         }else{
             if(yetiLibJar)
                 addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, yetiVersion, classpath);
