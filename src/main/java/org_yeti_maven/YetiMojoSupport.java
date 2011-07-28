@@ -47,7 +47,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     public static final String YETI_GROUPID= "org.yeti";
     public static final String YETI_ARTIFACTID= "yeti";
-    //public static final String YETI_ARTIFACTID= "yeti-lib";
+    public static final String YETI_LIB_ARTIFACTID= "yeti-lib";
     public static final String YETI_MAVEN_ARTIFACTID="yeti-maven-plugin";
     public static final String YETICL_ARTIFACTID="yeticl";
 
@@ -125,13 +125,31 @@ public abstract class YetiMojoSupport extends AbstractMojo {
     protected String[] args;
 
     /**
-     * className (FQN) of the yeti tool to provide as
+     * version of the yeti tool to provide as
      *
      * @required
      * @parameter expression="${yeti.maven.version}"
      *            default-value="0.1-SNAPSHOT"
      */
      protected String yetiVersion;
+
+    /**
+     * wheter to include fullyeti jar
+     *
+     * @required
+     * @parameter expression="${yeti.full-jar}"
+     *            default-value="true"
+     */
+     protected String yetiFullJar;
+
+    /**
+     * wheter to include yeti lib jar
+     *
+     * @required
+     * @parameter expression="${yeti.lib-jar}"
+     *            default-value="true"
+     */
+     protected String yetiLibJar;
 
     /**
      * className (FQN) of the yeti tool to provide as
@@ -315,37 +333,8 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     protected abstract void doExecute() throws Exception;
 
+    protected void addYetiLibToClassPath(Set<String> classpath) {
 
-    protected JavaMainCaller getScalaCommand() throws Exception {
-        JavaMainCaller cmd = getEmptyScalaCommand(yetiClassName);
-        cmd.addArgs(args);
-        cmd.addJvmArgs(jvmArgs);
-        return cmd;
-    }
-
-    protected JavaMainCaller getEmptyScalaCommand(String mainClass) throws Exception {
-        //TODO - Fork or not depending on configuration?
-        JavaMainCaller cmd;
-        cmd = new JavaMainCallerInProcess(this, mainClass, getToolClasspath(), null, null);
-        cmd.addJvmArgs("-Xbootclasspath/a:"+ getBootClasspath());
-        return cmd;
-    }
-
-    private String getToolClasspath() throws Exception {
-        Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-        if (dependencies != null) {
-            for(BasicArtifact artifact: dependencies) {
-                addToClasspath(artifact.groupId, artifact.artifactId, artifact.version, classpath);
-            }
-        }
-        return MainHelper.toMultiPath(classpath.toArray(new String[classpath.size()]));
-    }
-
-    private String getBootClasspath() throws Exception {
-        Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-        return MainHelper.toMultiPath(classpath.toArray(new String[classpath.size()]));
     }
 
 

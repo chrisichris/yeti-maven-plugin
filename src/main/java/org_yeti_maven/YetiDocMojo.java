@@ -199,15 +199,8 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
         return _sourceFiles;
     }
 
-    private boolean canAggregate() {
-        return false;
-    }
-
     public boolean canGenerateReport() {
-        // there is modules to aggregate
-        boolean back = ((project.isExecutionRoot() || forceAggregate) && canAggregate() && project.getCollectedProjects().size() > 0);
-        back = back || (findSourceFiles().size() != 0);
-        return back;
+        return true;
     }
 
     public boolean isExternalReport() {
@@ -258,29 +251,6 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
         // ".html");
         generate(null, Locale.getDefault());
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected JavaMainCaller getScalaCommand() throws Exception {
-        //This ensures we have a valid scala version...
-        if (StringUtils.isEmpty(yetidocClassName)) {
-            yetidocClassName = "org.yetidoc.yetidoc";
-        }
-
-        JavaMainCaller jcmd = getEmptyScalaCommand(yetidocClassName);
-        jcmd.addArgs(args);
-        jcmd.addJvmArgs(jvmArgs);
-
-        List<String> paths = project.getCompileClasspathElements();
-        //paths.remove(project.getBuild().getOutputDirectory()); //remove output to avoid "error for" : error:  XXX is already defined as package XXX ... object XXX {
-        jcmd.addOption("-cp", MainHelper.toMultiPath(paths));
-        //jcmd.addOption("-sourcepath", sourceDir.getAbsolutePath());
-        if (StringUtils.isEmpty(title)) {
-            jcmd.addOption("-fm", title);
-        }
-        return jcmd;
-    }
-
     public void generate(@SuppressWarnings("unused") Sink sink, @SuppressWarnings("unused") Locale locale) throws MavenReportException {
         try {
             if (!canGenerateReport()) {
@@ -389,46 +359,4 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void tryAggregateUpper(MavenProject prj) throws Exception {
-        if (prj != null && prj.hasParent() && canAggregate()) {
-            MavenProject parent = prj.getParent();
-            List<MavenProject> modules = parent.getCollectedProjects();
-            if ((modules.size() > 1) && prj.equals(modules.get(modules.size() - 1))) {
-                aggregate(parent);
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void aggregate(MavenProject parent) throws Exception {
-        if(! canAggregate())
-            return;
-        List<MavenProject> modules = parent.getCollectedProjects();
-        File dest = new File(parent.getReporting().getOutputDirectory() + "/" + outputDirectory);
-        getLog().info("start aggregation into " + dest);
-        StringBuilder mpath = new StringBuilder();
-        for (MavenProject module : modules) {
-            if ("pom".equals(module.getPackaging().toLowerCase())) {
-                continue;
-            }
-            if (aggregateDirectOnly && module.getParent() != parent) {
-                continue;
-            }
-            File subScaladocPath = new File(module.getReporting().getOutputDirectory() + "/" + outputDirectory).getAbsoluteFile();
-            if (subScaladocPath.exists()) {
-                mpath.append(subScaladocPath).append(File.pathSeparatorChar);
-            }
-        }
-        if (mpath.length() != 0) {
-            getLog().info("aggregate vscaladoc from : " + mpath);
-            JavaMainCaller jcmd = getScalaCommand();
-            jcmd.addOption("-d", dest.getAbsolutePath());
-            jcmd.addOption("-aggregate", mpath.toString());
-            jcmd.run(displayCmd);
-        } else {
-            getLog().warn("no vscaladoc to aggregate");
-        }
-        tryAggregateUpper(parent);
-    }
 }
