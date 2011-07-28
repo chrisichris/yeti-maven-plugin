@@ -83,7 +83,7 @@ public class YetiReplMojo extends YetiMojoSupport {
     @SuppressWarnings("unchecked")
     protected void doExecute() throws Exception {
         Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_LIBRARY_ARTIFACTID, yetiVersion, classpath);
+        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
         addToClasspath(YETI_GROUPID, YETI_MAVEN_ARTIFACTID, yetiVersion, classpath);
         addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
         addToClasspath("jline", "jline", "0.9.94", classpath);

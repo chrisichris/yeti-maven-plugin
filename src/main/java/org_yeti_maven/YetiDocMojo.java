@@ -304,7 +304,7 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
             ClassLoader compileClassLoader = null;
             {
                 Set<String> classpath = new HashSet<String>();
-                addToClasspath(YETI_GROUPID, YETI_LIBRARY_ARTIFACTID, yetiVersion, classpath);
+                addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
                 addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
                 classpath.addAll(project.getCompileClasspathElements());
                 String[] classPathUrls = classpath.toArray(new String[classpath.size()]);

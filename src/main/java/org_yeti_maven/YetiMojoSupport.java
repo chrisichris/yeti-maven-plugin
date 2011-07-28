@@ -46,7 +46,8 @@ import org_yeti_maven_executions.MainHelper;
 public abstract class YetiMojoSupport extends AbstractMojo {
 
     public static final String YETI_GROUPID= "org.yeti";
-    public static final String YETI_LIBRARY_ARTIFACTID= "yeti";
+    public static final String YETI_ARTIFACTID= "yeti";
+    //public static final String YETI_ARTIFACTID= "yeti-lib";
     public static final String YETI_MAVEN_ARTIFACTID="yeti-maven-plugin";
     public static final String YETICL_ARTIFACTID="yeticl";
 
@@ -332,7 +333,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     private String getToolClasspath() throws Exception {
         Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_LIBRARY_ARTIFACTID, yetiVersion, classpath);
+        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
         if (dependencies != null) {
             for(BasicArtifact artifact: dependencies) {
                 addToClasspath(artifact.groupId, artifact.artifactId, artifact.version, classpath);
@@ -343,7 +344,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     private String getBootClasspath() throws Exception {
         Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_LIBRARY_ARTIFACTID, yetiVersion, classpath);
+        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
         return MainHelper.toMultiPath(classpath.toArray(new String[classpath.size()]));
     }
 
