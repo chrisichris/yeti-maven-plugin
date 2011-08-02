@@ -128,7 +128,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      * version of the yeti tool to provide as
      *
      * @required
-     * @parameter expression="${yeti.maven.version}"
+     * @parameter expression="${yeti-version}"
      *            default-value="0.1-SNAPSHOT"
      */
      protected String yetiVersion;
@@ -137,7 +137,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      * wheter to include fullyeti jar
      *
      * @required
-     * @parameter expression="${yeti.full-jar}"
+     * @parameter expression="${yeti-full-jar}"
      *            default-value="true"
      */
      protected boolean yetiFullJar = true;
@@ -146,7 +146,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      * wheter to include yeti lib jar
      *
      * @required
-     * @parameter expression="${yeti.lib-jar}"
+     * @parameter expression="${yeti-lib-jar}"
      *            default-value="true"
      */
      protected boolean yetiLibJar = true;
@@ -335,7 +335,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     protected void addYetiLibToClassPath(Set<String> classpath) throws Exception {
         if(yetiFullJar){
-            addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, yetiVersion, classpath);
+            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
         }else{
             if(yetiLibJar)
                 addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, yetiVersion, classpath);
