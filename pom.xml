@@ -5,7 +5,7 @@
 
     <groupId>org.yeti</groupId>
     <artifactId>yeti-maven-plugin</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>yeti-maven-plugin</name>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.yeti</groupId>
             <artifactId>yeti</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.9.7-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
