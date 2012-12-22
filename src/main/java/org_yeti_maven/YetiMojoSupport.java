@@ -39,9 +39,6 @@ import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
-import org_yeti_maven_executions.JavaMainCaller;
-import org_yeti_maven_executions.JavaMainCallerInProcess;
-import org_yeti_maven_executions.MainHelper;
 
 public abstract class YetiMojoSupport extends AbstractMojo {
 
@@ -53,7 +50,6 @@ public abstract class YetiMojoSupport extends AbstractMojo {
     public static final String YETICL_ARTIFACTID="yeticl";
     public static final String YETICL_VERSION="0.2-SNAPSHOT";
 
-    public static final String YETI_VERSION = "0.1-SNAPSHOT";
     /**
      * @parameter expression="${project}"
      * @required
@@ -131,7 +127,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      *
      * @required
      * @parameter expression="${yeti-version}"
-     *            default-value="0.1-SNAPSHOT"
+     *            default-value="0.9.7-SNAPSHOT"
      */
      protected String yetiVersion;
 

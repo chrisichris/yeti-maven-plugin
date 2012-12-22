@@ -223,7 +223,7 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         {
             Set<String> classpath = new HashSet<String>();
             addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-            addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
+            addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, YETICL_VERSION, classpath);
             String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
 
             List urls = new ArrayList();
