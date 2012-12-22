@@ -84,8 +84,8 @@ public class YetiReplMojo extends YetiMojoSupport {
     protected void doExecute() throws Exception {
         Set<String> classpath = new HashSet<String>();
         addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-        addToClasspath(YETI_GROUPID, YETI_MAVEN_ARTIFACTID, yetiVersion, classpath);
-        addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, yetiVersion, classpath);
+        addToClasspath(YETI_GROUPID, YETI_MAVEN_ARTIFACTID, YETI_MAVEN_VERSION, classpath);
+        addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, YETICL_VERSION, classpath);
         addToClasspath("jline", "jline", "0.9.94", classpath);
         classpath.addAll(project.getCompileClasspathElements());
 
