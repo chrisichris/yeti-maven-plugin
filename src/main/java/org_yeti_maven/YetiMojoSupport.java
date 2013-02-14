@@ -122,41 +122,6 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      */
     protected String[] args;
 
-    /**
-     * version of the yeti tool to provide as
-     *
-     * @required
-     * @parameter expression="${yeti-version}"
-     *            default-value="0.9.7-SNAPSHOT"
-     */
-     protected String yetiVersion;
-
-    /**
-     * wheter to include fullyeti jar
-     *
-     * @required
-     * @parameter expression="${yeti-full-jar}"
-     *            default-value="true"
-     */
-     protected boolean yetiFullJar = true;
-
-    /**
-     * wheter to include yeti lib jar
-     *
-     * @required
-     * @parameter expression="${yeti-lib-jar}"
-     *            default-value="true"
-     */
-     protected boolean yetiLibJar = true;
-
-    /**
-     * className (FQN) of the yeti tool to provide as
-     *
-     * @required
-     * @parameter expression="${yeti.maven.className}"
-     *            default-value="yeti.lang.compiler.yeti"
-     */
-    protected String yetiClassName;
 
     /**
      * Display the command line called ?
@@ -347,20 +312,6 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
 
     protected abstract void doExecute() throws Exception;
-
-    protected void addYetiLibToClassPath(Set<String> classpath) 
-		throws Exception {
-        if(yetiFullJar){
-            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, 
-					yetiVersion, classpath);
-        }else{
-            if(yetiLibJar)
-                addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, 
-						yetiVersion, classpath);
-        }
-
-    }
-
 
 	protected void invokeYeti(String[] classpathFiles, String[] args) {
 		List urls = new ArrayList();
