@@ -313,11 +313,11 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     protected abstract void doExecute() throws Exception;
 
-	protected void invokeYeti(String[] classpathFiles, String[] args) {
+	protected void invokeYeti(List<String> classpathFiles, String[] args) {
 		List urls = new ArrayList();
-		for(int i=0;i < classpathFiles.length; i++) {
+		for(String file : classpahtFiles) {
 			try {
-				URL url = new File(classpathFiles[i]).toURI().toURL();
+				URL url = new File(file).toURI().toURL();
 				urls.add(url);
 				if(displayCmd) {
 					getLog().info(url.toString());
@@ -325,7 +325,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 			} catch (MalformedURLException ex) {
 				throw new IllegalArgumentException(
 						"Could not make URL of file:"
-						+classpathFiles[i]+" reason: "+ex.getMessage(),ex);
+						+file+" reason: "+ex.getMessage(),ex);
 			}
 		}
 		URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
