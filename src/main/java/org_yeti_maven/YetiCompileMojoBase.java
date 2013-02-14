@@ -52,22 +52,6 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
 
     /**
-     * Enables/Disables compilation of yeti source.
-     *
-     * @parameter expression="${yeti-compile}"
-     *            default-value="true"
-     */
-    protected boolean yetiCompile = true;
-
-    /**
-     * Enables/Disables compilation of yeti source.
-     *
-     * @parameter expression="${yetic}"
-     *            default-value="true"
-     */
-    protected boolean yetiC = true;
-
-    /**
      * A list of inclusion filters for the compiler.
      * ex :
      * <pre>
@@ -132,7 +116,8 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             // copy as I may be modifying it
             for (String srcDir : compileSourceRootsList) {
                 File srcDirFile = normalize(new File(srcDir));
-                if (!newCompileSourceRootsList.contains(srcDirFile) && srcDirFile.exists()) {
+                if (!newCompileSourceRootsList.contains(srcDirFile) 
+						&& srcDirFile.exists()) {
                     newCompileSourceRootsList.add(srcDirFile);
                 }
             }
@@ -143,7 +128,9 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
     @SuppressWarnings("unchecked")
     protected List<String> getClasspathElements() throws Exception {
-        List<String> fs = TychoUtilities.addOsgiClasspathElements(project, project.getCompileClasspathElements());
+        List<String> fs = 
+			TychoUtilities.addOsgiClasspathElements(project, 
+						project.getCompileClasspathElements());
         return fs;
     }
 
@@ -179,10 +166,14 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             //make sure filter is ok
             prepareIncludes(includes, sendJavaToYetic);
             for (File dir : sourceRootDirs) {
-                String[] tmpFiles = MainHelper.findFiles(dir, includes.toArray(new String[includes.size()]), excludes.toArray(new String[excludes.size()]));
+                String[] tmpFiles = 
+					MainHelper.findFiles(dir, 
+							includes.toArray(new String[includes.size()]), 
+							excludes.toArray(new String[excludes.size()]));
                 for (String tmpLocalFile : tmpFiles) {
                     if (new File(dir,tmpLocalFile).exists()) {
-                        String localName = tmpLocalFile.replace(File.separator, "/");
+                        String localName = 
+							tmpLocalFile.replace(File.separator, "/");
                         sourceFiles.add(localName);
                     }
                 }
@@ -199,8 +190,6 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
     @Override
     protected void doExecute() throws Exception {
-        if(! (yetiCompile && yetiC ))
-                return;
         long t0 = System.currentTimeMillis();
         List<File> sourceDirs = getSourceDirectories();
         String[] sourceDirsA = new String[sourceDirs.size()];
@@ -222,35 +211,44 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         Method compileMethod = null;
         {
             Set<String> classpath = new HashSet<String>();
-            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-            addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, YETICL_VERSION, classpath);
-            String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
+            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, 
+					yetiVersion, classpath);
+            addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, 
+					YETICL_VERSION, classpath);
+            String[] classPathUrls = 
+				classpath.toArray(new String[classpath.size()]);
 
             List urls = new ArrayList();
             for(int i=0;i < classPathUrls.length; i++) {
                 try {
                     urls.add(new File(classPathUrls[i]).toURI().toURL());
                     if(displayCmd) {
-                        getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
+                        getLog().info(
+								new File(classPathUrls[i]).toURI().toURL()
+									.toString());
                     }
                 } catch (MalformedURLException ex) {
-                    throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
+                    throw new IllegalArgumentException(
+							"Could not make URL of file:"
+							+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
                 }
             }
             URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
-            ClassLoader compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
+            ClassLoader compileClassLoader = 
+				new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
 
-            //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
-            Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
-            compileMethod = compileClass.getMethod("compileAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
+            Class compileClass = 
+				compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
+            compileMethod = 
+				compileClass.getMethod("compileAll", String[].class, 
+						String[].class,Boolean.TYPE,String[].class,
+						String.class);
             compileInstance = compileClass.newInstance();
-            //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
-               
-
         }
         
         List<String> sourceFilesC = findSourceFiles(sourceDirs);
-        String[] sourceFiles = sourceFilesC.toArray(new String[sourceFilesC.size()]);
+        String[] sourceFiles = 
+			sourceFilesC.toArray(new String[sourceFilesC.size()]);
 
         File outputDir = normalize(getOutputDir());
         if (!outputDir.exists()) {
@@ -263,18 +261,22 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         }
 
         long t1 = System.currentTimeMillis();
-        getLog().info(String.format("Compiling %d source files to %s at %d", sourceFilesC.size(), outputDir.getAbsolutePath(), t1));
+        getLog().info(String.format("Compiling %d source files to %s at %d", 
+					sourceFilesC.size(), outputDir.getAbsolutePath(), t1));
 
         try{
 
             String toPath = outputDir.getAbsolutePath();
-            toPath = (toPath.equals("") || toPath.endsWith("/")) ? toPath : toPath + "/";
-            compileMethod.invoke(compileInstance, classPath,sourceDirsA,false,sourceFiles,toPath);
+            toPath = (toPath.equals("") || toPath.endsWith("/")) ? 
+					toPath : toPath + "/";
+            compileMethod.invoke(compileInstance, classPath,
+					sourceDirsA,false,sourceFiles,toPath);
 
         }catch(InvocationTargetException ex) {
             if(ex.getCause() instanceof Exception) {
                 Exception e = (Exception) ex.getCause();
-                if("yeti.lang.compiler.CompileException".equals(e.getClass().getName()))
+                if("yeti.lang.compiler.CompileException".equals(
+							e.getClass().getName()))
                     throw new MojoExecutionException(e.getMessage());
                 else
                     throw e;
@@ -282,7 +284,8 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         }
 
         getLog().info(String.format("prepare-compile in %d s", (t1 - t0) / 1000));
-        getLog().info(String.format("compile in %d s", (System.currentTimeMillis() - t1) / 1000));
+        getLog().info(String.format("compile in %d s", 
+					(System.currentTimeMillis() - t1) / 1000));
 
     }
 
