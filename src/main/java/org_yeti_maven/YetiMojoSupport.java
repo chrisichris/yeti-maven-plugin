@@ -230,10 +230,10 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
 
-    protected void prepareIncludes(Set<String> includes, boolean sendJavaToYetic) {
+    protected void prepareIncludes(Set<String> includes, 
+									boolean sendJavaToYetic) {
         if (includes.isEmpty()) {
             includes.add("**/*.yeti");
-            includes.add("**/*.teti");
 
             if (sendJavaToYetic) {
                 includes.add("**/*.java");
@@ -252,7 +252,8 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      * @throws InvalidDependencyVersionException
      */
     @SuppressWarnings("unchecked")
-    protected Set<Artifact> resolveDependencyArtifacts(MavenProject theProject) throws Exception {
+    protected Set<Artifact> resolveDependencyArtifacts(MavenProject theProject)
+			throws Exception {
         AndArtifactFilter filter = new AndArtifactFilter();
         filter.add(new ScopeArtifactFilter(Artifact.SCOPE_TEST));
         filter.add(new ArtifactFilter(){
@@ -261,7 +262,9 @@ public abstract class YetiMojoSupport extends AbstractMojo {
             }
         });
         //TODO follow the dependenciesManagement and override rules
-        Set<Artifact> artifacts = theProject.createArtifacts(factory, Artifact.SCOPE_RUNTIME, filter);
+        Set<Artifact> artifacts = 
+				theProject.createArtifacts(factory, 
+						Artifact.SCOPE_RUNTIME, filter);
         for (Artifact artifact : artifacts) {
             resolver.resolve(artifact, remoteRepos, localRepo);
         }
@@ -280,22 +283,36 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      * @throws ProjectBuildingException
      * @throws InvalidDependencyVersionException
      */
-    protected Set<Artifact> resolveArtifactDependencies(Artifact artifact) throws Exception {
-        Artifact pomArtifact = factory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "", "pom");
-        MavenProject pomProject = mavenProjectBuilder.buildFromRepository(pomArtifact, remoteRepos, localRepo);
+    protected Set<Artifact> resolveArtifactDependencies(Artifact artifact) 
+		throws Exception {
+        Artifact pomArtifact = 
+			factory.createArtifact(artifact.getGroupId(), 
+					artifact.getArtifactId(), artifact.getVersion(), 
+					"", "pom");
+        MavenProject pomProject = 
+			mavenProjectBuilder.buildFromRepository(pomArtifact, 
+													remoteRepos, 
+													localRepo);
         return resolveDependencyArtifacts(pomProject);
     }
 
-    public void addToClasspath(String groupId, String artifactId, String version, Set<String> classpath) throws Exception {
+    public void addToClasspath(String groupId, String artifactId, 
+			String version, Set<String> classpath) throws Exception {
         addToClasspath(groupId, artifactId, version, classpath, true);
     }
 
 
-    public void addToClasspath(String groupId, String artifactId, String version, Set<String> classpath, boolean addDependencies) throws Exception {
-        addToClasspath(factory.createArtifact(groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar"), classpath, addDependencies);
+    public void addToClasspath(String groupId, String artifactId, 
+			String version, Set<String> classpath, boolean addDependencies) 
+		throws Exception {
+        addToClasspath(
+				factory.createArtifact(groupId, artifactId, version, 
+					Artifact.SCOPE_RUNTIME, "jar"), 
+				classpath, addDependencies);
     }
 
-    protected void addToClasspath(Artifact artifact, Set<String> classpath, boolean addDependencies) throws Exception {
+    protected void addToClasspath(Artifact artifact, Set<String> classpath, 
+			boolean addDependencies) throws Exception {
         resolver.resolve(artifact, remoteRepos, localRepo);
         classpath.add(artifact.getFile().getCanonicalPath());
         if (addDependencies) {
@@ -331,16 +348,17 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     protected abstract void doExecute() throws Exception;
 
-    protected void addYetiLibToClassPath(Set<String> classpath) throws Exception {
+    protected void addYetiLibToClassPath(Set<String> classpath) 
+		throws Exception {
         if(yetiFullJar){
-            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
+            addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, 
+					yetiVersion, classpath);
         }else{
             if(yetiLibJar)
-                addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, yetiVersion, classpath);
+                addToClasspath(YETI_GROUPID, YETI_LIB_ARTIFACTID, 
+						yetiVersion, classpath);
         }
 
     }
-
-
 
 }
