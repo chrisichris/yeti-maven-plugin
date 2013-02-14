@@ -181,11 +181,16 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
                 initFilters();
 
                 for (File dir : sourceRootDirs) {
-                    String[] tmpFiles = MainHelper.findFiles(dir, includes.toArray(new String[includes.size()]), excludes.toArray(new String[excludes.size()]));
-                    for (String tmpLocalFile : tmpFiles) {
-                        if (new File(dir,tmpLocalFile).exists()) {
-                            String localName = tmpLocalFile.replace(File.separator, "/");
-                            sourceFiles.add(localName);
+                    String[] files = 
+						MainHelper.findFiles(dir, 
+								includes.toArray(new String[includes.size()]), 
+								excludes.toArray(new String[excludes.size()]));
+                    for (String fileN : files) {
+                        File file = new File(dir,fileN);
+						if (file.exists()) {
+							String path = 
+								file.getPath().replace(File.separator, "/");
+                            sourceFiles.add(path);
                         }
                     }
                 }
@@ -231,13 +236,18 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
     public File getReportOutputDirectory() {
         if (reportOutputDirectory == null) {
-            reportOutputDirectory = new File(project.getBasedir(), project.getReporting().getOutputDirectory() + "/" + outputDirectory).getAbsoluteFile();
+            reportOutputDirectory = 
+				new File(project.getBasedir(), 
+						project.getReporting().getOutputDirectory() 
+							+ "/" + outputDirectory)
+				.getAbsoluteFile();
         }
         return reportOutputDirectory;
     }
 
     public void setReportOutputDirectory(File v) {
-        if (v != null && outputDirectory != null && !v.getAbsolutePath().endsWith(outputDirectory)) {
+        if (v != null && outputDirectory != null 
+				&& !v.getAbsolutePath().endsWith(outputDirectory)) {
             this.reportOutputDirectory = new File(v, outputDirectory);
         } else {
             this.reportOutputDirectory = v;
@@ -251,7 +261,10 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
         // ".html");
         generate(null, Locale.getDefault());
     }
-    public void generate(@SuppressWarnings("unused") Sink sink, @SuppressWarnings("unused") Locale locale) throws MavenReportException {
+
+    public void generate(@SuppressWarnings("unused") Sink sink, 
+						 @SuppressWarnings("unused") Locale locale) 
+								throws MavenReportException {
         try {
             if (!canGenerateReport()) {
                 getLog().warn("No source files found");
@@ -263,92 +276,46 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
             //The sourceDirs
             List<File> sourceDirs = getSourceDirectories();
-            String[] sourceDirsA = new String[sourceDirs.size()];
-            for(int i= 0;i < sourceDirsA.length;i++) {
-                sourceDirsA[i] = sourceDirs.get(i).getPath();
-            }
+            List<String> sourceFiles = findSourceFiles();
 
-            //prepare the compile/doc classloader
-            Object compileInstance = null;
-            Method compileMethod = null;
-            ClassLoader compileClassLoader = null;
-            {
-                Set<String> classpath = new HashSet<String>();
-                addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-                addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, YETICL_VERSION, classpath);
-                classpath.addAll(project.getCompileClasspathElements());
-                String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
+			//the classpath
+			Set<String> classpath = 
+				new HashSet<String>(project.getCompileClasspathElements());
 
-                if(classPathUrls != null && classPathUrls.length > 0) {
-                    List urls = new ArrayList();
-                    for(int i=0;i < classPathUrls.length; i++) {
-                        try {
-                            urls.add(new File(classPathUrls[i]).toURI().toURL());
-                            if(displayCmd) {
-                                getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
-                            }
-                        } catch (MalformedURLException ex) {
-                            throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
-                        }
-                    }
-                    URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
-                    compileClassLoader = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
-
-                    //Class sourceReaderClass = compileClassLoader.loadClass("yeti.lang.compiler.SourceReader");
-                    Class compileClass = compileClassLoader.loadClass("org.yeticl.YetiCompileHelper");
-                    compileMethod = compileClass.getMethod("htmlDocAll", String[].class, String[].class,Boolean.TYPE,String[].class,String.class);
-                    compileInstance = compileClass.newInstance();
-                    //sourceReader = compileClassLoader.loadClass("org.yeticl.FileSourceReader").getConstructor(String[].class).newInstance((Object)sds);
-
-
-                }else{
-                    getLog().error("No classpath this must not happen");
-                    throw new IllegalStateException("No classpath here");
-                }
-            }
-
-            List<String> sourceFilesC = findSourceFiles();
-            String[] sourceFiles = sourceFilesC.toArray(new String[sourceFilesC.size()]);
-
-
-            File reportOutputDir = getReportOutputDirectory();
+            //outputdir
+			File reportOutputDir = getReportOutputDirectory();
             if (!reportOutputDir.exists()) {
                 reportOutputDir.mkdirs();
             }
+			String toPath = reportOutputDir.getAbsolutePath();
+			toPath = (toPath.equals("") || toPath.endsWith("/")) ? 
+						toPath : toPath + "/";
 
+			//some logging
             if (getLog().isDebugEnabled()) {
                 for(File directory : sourceDirs) {
                     getLog().debug(directory.getCanonicalPath());
                 }
             }
 
-            String[] classPath = new String[]{};
+            getLog().info(
+					String.format("Compiling %d source files to %s", 
+						sourceFilesC.size(), 
+						reportOutputDir.getAbsolutePath()));
 
-            long t1 = System.currentTimeMillis();
-            getLog().info(String.format("Compiling %d source files to %s at %d", sourceFilesC.size(), reportOutputDir.getAbsolutePath(), t1));
 
-            ClassLoader oldL = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(compileClassLoader);
-            try{
+			//invoke it
+			List<String> params = new ArrayList<String>();
+			params.add("-doc");
+			params.add(toDir);
+			params.addAll(sourceDirs);
+			params.addAll(sourceFiles);
+			
+			invokeYeti(classpath, params.toArray(new String[params.size()]));
 
-                String toPath = reportOutputDir.getAbsolutePath();
-                toPath = (toPath.equals("") || toPath.endsWith("/")) ? toPath : toPath + "/";
-                compileMethod.invoke(compileInstance, classPath,sourceDirsA,false,sourceFiles,toPath);
-
-            }catch(InvocationTargetException ex) {
-                if(ex.getCause() instanceof Exception) {
-                    Exception e = (Exception) ex.getCause();
-                    if("yeti.lang.compiler.CompileException".equals(e.getClass().getName()))
-                        throw new MojoExecutionException(e.getMessage());
-                    else
-                        throw e;
-                }else throw ex;
-            }finally{
-                Thread.currentThread().setContextClassLoader(oldL);
-            }
-
-            getLog().info(String.format("prepare-compile in %d s", (t1 - t0) / 1000));
-            getLog().info(String.format("compile in %d s", (System.currentTimeMillis() - t1) / 1000));
+            getLog().info(
+					String.format("compile in %d s", 
+						(System.currentTimeMillis() - t0) / 1000));
 
 
  

@@ -191,17 +191,13 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         long t0 = System.currentTimeMillis();
 
         //the classpath
-        String[] classPath = new String[]{};
-        {
-            Set<String> classpath = new HashSet<String>();
-            addYetiLibToClassPath(classpath);
-            classpath.addAll(getClasspathElements());
-            classPath = classpath.toArray(new String[classpath.size()]);
-        }
+		Set<String> classpath = new HashSet<String>();
+		addYetiLibToClassPath(classpath);
+		classpath.addAll(getClasspathElements());
 
 		//the sourcedirs and files
         List<File> sourceDirs = getSourceDirectories();
-        }
+        
         
         List<String> sourceFiles = findSourceFiles(sourceDirs);
 
@@ -228,9 +224,10 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 		List<String> params = new ArrayList<String>();
 		params.add("-d");
 		params.add(toPath);
+		params.addAll(sourceDirs);
 		params.addAll(sourceFiles);
 
-		invokeYeti(classPath, params.toArray(new String[params.size()]));
+		invokeYeti(classpath, params.toArray(new String[params.size()]));
 
         getLog().info(String.format("compile in %d s", 
 					(System.currentTimeMillis() - t0) / 1000));
