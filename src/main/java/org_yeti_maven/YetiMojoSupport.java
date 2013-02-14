@@ -390,10 +390,11 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 			throw new IllegalArgumentException(
 					"The yeti.jar must be on the classpath");
 		}
+
+		ClassLoader oCl = Thread.currentThread().getContextClassLoader();
         try{
-
+			Thread.currentThread.setContextClassLoader(classLoader);
             yetiMethod.invoke(null,args);
-
         }catch(InvocationTargetException ex) {
             if(ex.getCause() instanceof Exception) {
                 Exception e = (Exception) ex.getCause();
@@ -403,7 +404,9 @@ public abstract class YetiMojoSupport extends AbstractMojo {
                 else
                     throw e;
             }else throw ex;
-        }
+        }finally {
+			Thread.currentThread.setContextClassLoader(oCl);
+		}
 	}
 
 }
