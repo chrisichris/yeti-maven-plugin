@@ -47,8 +47,8 @@ public abstract class YetiMojoSupport extends AbstractMojo {
     public static final String YETI_LIB_ARTIFACTID= "yeti-lib";
     public static final String YETI_MAVEN_ARTIFACTID="yeti-maven-plugin";
     public static final String YETI_MAVEN_VERSION="0.2-SNAPSHOT";
-    public static final String YETICL_ARTIFACTID="yeticl";
-    public static final String YETICL_VERSION="0.2-SNAPSHOT";
+    //public static final String YETICL_ARTIFACTID="yeticl";
+    //public static final String YETICL_VERSION="0.2-SNAPSHOT";
 
     /**
      * @parameter expression="${project}"
