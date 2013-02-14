@@ -361,4 +361,49 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 
     }
 
+
+	protected void invokeYeti(String[] classpathFiles, String[] args) {
+		List urls = new ArrayList();
+		for(int i=0;i < classpathFiles.length; i++) {
+			try {
+				URL url = new File(classpathFiles[i]).toURI().toURL();
+				urls.add(url);
+				if(displayCmd) {
+					getLog().info(url.toString());
+				}
+			} catch (MalformedURLException ex) {
+				throw new IllegalArgumentException(
+						"Could not make URL of file:"
+						+classpathFiles[i]+" reason: "+ex.getMessage(),ex);
+			}
+		}
+		URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
+		ClassLoader compileClassLoader = 
+			new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
+
+		Method yetiMethod = null;
+		try
+			yetiMethod = 
+				(compileClassLoader.loadClass("yeti.lang.compiler.yeti"))
+					.getMethod("main", String[].class);
+		catch(ClassNotFoundException ex) {
+			throw new IllegalArgumentException(
+					"The yeti.jar must be on the classpath");
+		}
+        try{
+
+            yetiMethod.invoke(null,args);
+
+        }catch(InvocationTargetException ex) {
+            if(ex.getCause() instanceof Exception) {
+                Exception e = (Exception) ex.getCause();
+                if("yeti.lang.compiler.CompileException".equals(
+							e.getClass().getName()))
+                    throw new MojoExecutionException(e.getMessage());
+                else
+                    throw e;
+            }else throw ex;
+        }
+	}
+
 }
