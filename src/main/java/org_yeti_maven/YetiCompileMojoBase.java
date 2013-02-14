@@ -171,11 +171,9 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 							includes.toArray(new String[includes.size()]), 
 							excludes.toArray(new String[excludes.size()]));
                 for (String tmpLocalFile : tmpFiles) {
-                    if (new File(dir,tmpLocalFile).exists()) {
-                        String localName = 
-							tmpLocalFile.replace(File.separator, "/");
-                        sourceFiles.add(localName);
-                    }
+                    File fl = new File(dir,tmpLocalFile);
+					if (fl.exists())
+						sourceFiles.add(fl.getPath());
                 }
             }
             Collections.sort(sourceFiles);
