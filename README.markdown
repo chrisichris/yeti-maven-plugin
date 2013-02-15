@@ -50,8 +50,6 @@ This features are not supported anymore
 
 Enjoy.
 
-
-
 ## Support
 
 Join the discussion mailing list at:
