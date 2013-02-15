@@ -18,6 +18,7 @@ package org_yeti_maven;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -83,11 +84,9 @@ public class YetiTestCompileMojo extends YetiCompileMojoBase {
     @Override
     @SuppressWarnings("unchecked")
     protected List<File> getSourceDirectories() throws Exception {
-        List<String> sources = project.getTestCompileSourceRoots();
-        String tSourceDir = testSourceDir.getAbsolutePath();
-        if(!sources.contains(tSourceDir)) {
-            sources.add(tSourceDir);
-        }
-        return normalize(sources);
+        List<File> r =  new ArrayList<File>();
+		if(testSourceDir.exists())
+			r.add(normalize(testSourceDir));
+		return r;
     }
 }

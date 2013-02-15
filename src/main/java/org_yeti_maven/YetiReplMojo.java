@@ -79,14 +79,12 @@ public class YetiReplMojo extends YetiMojoSupport {
      */
     protected File testSourceDir;
 
+    
     @Override
     @SuppressWarnings("unchecked")
     protected void doExecute() throws Exception {
-        Set<String> classpath = new HashSet<String>();
-        addToClasspath(YETI_GROUPID, YETI_ARTIFACTID, yetiVersion, classpath);
-        addToClasspath(YETI_GROUPID, YETI_MAVEN_ARTIFACTID, YETI_MAVEN_VERSION, classpath);
-        addToClasspath(YETI_GROUPID, YETICL_ARTIFACTID, YETICL_VERSION, classpath);
-        addToClasspath("jline", "jline", "0.9.94", classpath);
+        //classpath
+		Set<String> classpath = new HashSet<String>();
         classpath.addAll(project.getCompileClasspathElements());
 
         if (useTestClasspath) {
@@ -95,68 +93,7 @@ public class YetiReplMojo extends YetiMojoSupport {
         if (useRuntimeClasspath) {
             classpath.addAll(project.getRuntimeClasspathElements());
         }
-        String[] classPathUrls = classpath.toArray(new String[classpath.size()]);
 
-        ClassLoader parentCl = null;
-        if(classPathUrls != null && classPathUrls.length > 0) {
-            List urls = new ArrayList();
-            for(int i=0;i < classPathUrls.length; i++) {
-                try {
-                    urls.add(new File(classPathUrls[i]).toURI().toURL());
-                    if(displayCmd) {
-                        getLog().info(new File(classPathUrls[i]).toURI().toURL().toString());
-                    }
-                } catch (MalformedURLException ex) {
-                    throw new IllegalArgumentException("Could not make URL of file:"+classPathUrls[i]+" reason: "+ex.getMessage(),ex);
-                }
-            }
-            URL[] urlsA = (URL[]) urls.toArray(new URL[urls.size()]);
-            parentCl = new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
-        }else{
-            getLog().error("No classpath this must not happen");
-            throw new IllegalStateException("No classpath here");
-        }
-
-        //set the pathes
-        String[] srcPathes = null;
-        {
-            //for the main sourceDirs
-            List<String> sources = project.getCompileSourceRoots();
-            //Quick fix in case the user has not added the "add-source" goal.
-            String tSourceDir = sourceDir.getCanonicalPath();
-            if(!sources.contains(tSourceDir)) {
-                sources.add(tSourceDir);
-            }
-
-            List<String> srcDirs = new ArrayList<String>(sources);
-
-            if(this.useTestClasspath){
-                sources = project.getTestCompileSourceRoots();
-                tSourceDir = testSourceDir.getAbsolutePath();
-                if(!sources.contains(tSourceDir)) {
-                    sources.add(tSourceDir);
-                }
-                srcDirs.addAll(sources);
-            }
-            if(srcDirs.size() > 0) {
-                srcPathes = srcDirs.toArray(new String[srcDirs.size()]);
-            }
-        }
-
-        String[] cds = null;
-        if(commands != null && commands.trim().length() != 0){
-            cds = commands.split(";;");
-            for(int i= 0;i<cds.length;i++) {
-                cds[i] = cds[i].trim();
-            }
-        }else{
-            cds = null;
-        }
-        getLog().info("commands: "+commands+" \n\nis:"+cds);
-        //load the yetishillutils
-
-        Class cl = parentCl.loadClass("org.yeticl.YetiCompileHelper");
-        Method m = cl.getMethod("shellEvaluateLoop", ClassLoader.class,String[].class,String[].class);
-        m.invoke(cl.newInstance(), parentCl,srcPathes,cds);
+		invokeYeti(classpath, new String[]{});	
     }
 }

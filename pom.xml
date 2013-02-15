@@ -26,14 +26,20 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/chrisichris/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:git@github.com:chrisichris/${project.artifactId}.git</developerConnection>
+		<connection>
+			scm:git:git://github.com/chrisichris/${project.artifactId}.git
+		</connection>
+		<developerConnection>
+			scm:git:git@github.com:chrisichris/${project.artifactId}.git
+		</developerConnection>
         <url>http://github.com/chrisichris/${project.artifactId}/</url>
     </scm>
 
     <issueManagement>
         <system>github</system>
-        <url>http://github.com/chrisichris/${project.artifactId}/issues#issue/</url>
+		<url>
+			http://github.com/chrisichris/${project.artifactId}/issues#issue/
+		</url>
     </issueManagement>
 
     <mailingLists>
@@ -59,11 +65,6 @@
     </distributionManagement>
 
     <repositories>
-        <repository>
-            <id>chrisis.snapshots</id>
-            <name>chrisis-maven-repo</name>
-            <url>http://chrisichris.github.com/chrisis-maven-repo/snapshots</url>
-        </repository>
         <repository>
             <id>jboss.releases</id>
             <name>JBoss releases</name>
@@ -104,10 +105,11 @@
     </prerequisites>
 
     <dependencies>
+		<!--
         <dependency>
             <groupId>org.yeti</groupId>
             <artifactId>yeti</artifactId>
-            <version>0.9.7-SNAPSHOT</version>
+            <version>0.9.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -115,7 +117,8 @@
             <artifactId>jline</artifactId>
             <version>0.9.94</version>
             <scope>provided</scope>
-        </dependency>
+		</dependency>
+		-->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
@@ -274,16 +277,16 @@
             </resource>
         </resources>
         <plugins>
-     <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <finalName>yeti</finalName>
-          <descriptors>
-            <descriptor>src/assemble/yeti-project-template.xml</descriptor>
-          </descriptors>
-        </configuration>
-      </plugin>
+		 <plugin>
+			<artifactId>maven-assembly-plugin</artifactId>
+			<version>2.2</version>
+			<configuration>
+			  <finalName>yeti</finalName>
+			  <descriptors>
+				<descriptor>src/assemble/yeti-project-template.xml</descriptor>
+			  </descriptors>
+			</configuration>
+		  </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -326,7 +329,8 @@
                 <version>2.1</version>
                 <configuration>
                     <releaseProfiles>release</releaseProfiles>
-                    <goals>install animal-sniffer:check deploy site-deploy assembly:assembly</goals>
+					<goals>
+						install animal-sniffer:check deploy site-deploy assembly:assembly</goals>
                 </configuration>
             </plugin>
         </plugins>
@@ -351,10 +355,11 @@
                             <settingsFile>src/it/settings.xml</settingsFile>
                             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                             <properties>
-                                <yeti.version.lastrelease>0.1-SNAPSHOT</yeti.version.lastrelease>
+                                <yeti.version.lastrelease>0.9.8-SNAPSHOT</yeti.version.lastrelease>
                             </properties>
-                            <debug>false</debug>
-                            <streamLogs>true</streamLogs>
+                            <debug>true</debug>
+							<showErrors>true</showErrors>
+                            <streamLogs>false</streamLogs>
                             <projectsDirectory>src/it</projectsDirectory>
                             <pomIncludes>
                                 <pomInclude>**/pom.xml</pomInclude>

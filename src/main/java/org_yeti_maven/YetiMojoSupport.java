@@ -15,9 +15,22 @@
  */
 package org_yeti_maven;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException; 
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.ArrayList;
+
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
+
+import java.io.File;
+
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -49,6 +62,18 @@ public abstract class YetiMojoSupport extends AbstractMojo {
     public static final String YETI_MAVEN_VERSION="0.2-SNAPSHOT";
     //public static final String YETICL_ARTIFACTID="yeticl";
     //public static final String YETICL_VERSION="0.2-SNAPSHOT";
+
+    /**
+     * Wheter only the yeti-lib is in the compile-dependencies. If
+	 * so set the version of the yeti to use (generally the same as the 
+	 * yeti-lib as value). A value of "no" - the default - means that
+	 * the full yeti.jar is in the compile-dependencies
+     *
+     * @required
+     * @parameter expression="${yeti-lib-only}"
+	 * 			  default-value="no"
+     */
+    protected String yetiLibOnly = "no";
 
     /**
      * @parameter expression="${project}"
@@ -200,9 +225,9 @@ public abstract class YetiMojoSupport extends AbstractMojo {
         if (includes.isEmpty()) {
             includes.add("**/*.yeti");
 
-            if (sendJavaToYetic) {
-                includes.add("**/*.java");
-            }
+            //if (sendJavaToYetic) {
+            //    includes.add("**/*.java");
+            //}
         }
     }
 
@@ -307,15 +332,29 @@ public abstract class YetiMojoSupport extends AbstractMojo {
         return project.getCompileDependencies();
     }
 
-
-
-
-
     protected abstract void doExecute() throws Exception;
 
-	protected void invokeYeti(List<String> classpathFiles, String[] args) {
+	protected void invokeYeti(Set<String> classpathFiles, String[] args) 
+		throws Exception
+	{
+		//check wheter only the lib is on the classpath
+		//then include the full yeti jar
+		if( !("".equals(yetiLibOnly)) && !("no".equals(yetiLibOnly))) {
+			addToClasspath(YETI_GROUPID,
+							YETI_ARTIFACTID, 
+							yetiLibOnly, 
+							classpathFiles);
+		}
+
+		//display the cmd if necessary
+		if(displayCmd)
+			getLog().info("yeti "
+					+ Arrays.toString(args) 
+					+ "\nClasspath:\n");
+		
+		//creat classloader	
 		List urls = new ArrayList();
-		for(String file : classpahtFiles) {
+		for(String file : classpathFiles) {
 			try {
 				URL url = new File(file).toURI().toURL();
 				urls.add(url);
@@ -332,20 +371,22 @@ public abstract class YetiMojoSupport extends AbstractMojo {
 		ClassLoader compileClassLoader = 
 			new URLClassLoader(urlsA,ClassLoader.getSystemClassLoader());
 
+		//get the yeti main method
 		Method yetiMethod = null;
-		try
+		try {
 			yetiMethod = 
 				(compileClassLoader.loadClass("yeti.lang.compiler.yeti"))
 					.getMethod("main", String[].class);
-		catch(ClassNotFoundException ex) {
+		}catch(ClassNotFoundException ex) {
 			throw new IllegalArgumentException(
 					"The yeti.jar must be on the classpath");
 		}
 
+		//invoke yeti main
 		ClassLoader oCl = Thread.currentThread().getContextClassLoader();
         try{
-			Thread.currentThread.setContextClassLoader(classLoader);
-            yetiMethod.invoke(null,args);
+			Thread.currentThread().setContextClassLoader(compileClassLoader);
+            yetiMethod.invoke(null,(Object)args);
         }catch(InvocationTargetException ex) {
             if(ex.getCause() instanceof Exception) {
                 Exception e = (Exception) ex.getCause();
@@ -356,7 +397,7 @@ public abstract class YetiMojoSupport extends AbstractMojo {
                     throw e;
             }else throw ex;
         }finally {
-			Thread.currentThread.setContextClassLoader(oCl);
+			Thread.currentThread().setContextClassLoader(oCl);
 		}
 	}
 

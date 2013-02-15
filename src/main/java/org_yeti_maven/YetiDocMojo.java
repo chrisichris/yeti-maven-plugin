@@ -144,26 +144,11 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
     @SuppressWarnings("unchecked")
     protected List<File> getSourceDirectories() throws Exception {
-        List<String> sources = project.getCompileSourceRoots();
-        //Quick fix in case the user has not added the "add-source" goal.
-        String yetiSourceDir = sourceDir.getCanonicalPath();
-        if (!sources.contains(yetiSourceDir)) {
-            sources.add(yetiSourceDir);
-        }
-        List<File> ret = new ArrayList<File>(sources.size());
-        for (String path : sources) {
-            File f = new File(path);
-            try {
-                f = f.getCanonicalFile();
-            } catch (IOException exc) {
-                f = f.getAbsoluteFile();
-            }
-            if (f.exists() && !ret.contains(f)) {
-                ret.add(f);
-            }
-        }
-        return ret;
-    }
+        List<File> sources = new ArrayList<File>();
+		if(sourceDir.exists())
+			sources.add(sourceDir);
+		return sources;
+	}
 
     protected void initFilters() throws Exception {
         prepareIncludes(includes, sendJavaToYetic);
@@ -300,16 +285,16 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 
             getLog().info(
 					String.format("Compiling %d source files to %s", 
-						sourceFilesC.size(), 
+						sourceFiles.size(), 
 						reportOutputDir.getAbsolutePath()));
 
 
 			//invoke it
 			List<String> params = new ArrayList<String>();
 			params.add("-doc");
-			params.add(toDir);
-			params.addAll(sourceDirs);
+			params.add(toPath);
 			params.addAll(sourceFiles);
+			for(File dir:sourceDirs) params.add(dir.getPath());
 			
 			invokeYeti(classpath, params.toArray(new String[params.size()]));
 

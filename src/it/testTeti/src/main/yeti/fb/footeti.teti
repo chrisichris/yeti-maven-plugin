@@ -1,9 +1,0 @@
-module fb.footeti;
-
-do y:
-    write x = println x;
-	writers = { e = write, u = write};
-	x = 1+1;
-%>Write something here<%
-	()
-done

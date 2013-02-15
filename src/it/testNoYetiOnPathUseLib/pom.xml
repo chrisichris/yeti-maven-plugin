@@ -8,7 +8,7 @@
     <name>${project.artifactId}</name>
     <description>${project.artifactId}</description>
     <packaging>jar</packaging>
-    <dependencies>
+	<dependencies>
         <!--
         <dependency>
             <groupId>org.yeti</groupId>
@@ -46,7 +46,7 @@
                     </execution>
                 </executions>
 				<configuration>
-                    <yeti.full-jar>false</yeti.full-jar>
+                    <yetiLibOnly>${yeti.version.lastrelease}</yetiLibOnly>
                 </configuration>
 			</plugin>
         </plugins>

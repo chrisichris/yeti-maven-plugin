@@ -98,7 +98,7 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
     protected boolean logWarnings = true;
 
     
-    private File normalize(File f) {
+    protected File normalize(File f) {
         try {
             f = f.getCanonicalFile();
         } catch (IOException exc) {
@@ -146,13 +146,10 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
     @SuppressWarnings("unchecked")
     protected List<File> getSourceDirectories() throws Exception {
-        List<String> sources = project.getCompileSourceRoots();
-        //Quick fix in case the user has not added the "add-source" goal.
-        String yetiSourceDir = sourceDir.getCanonicalPath();
-        if (!sources.contains(yetiSourceDir)) {
-            sources.add(yetiSourceDir);
-        }
-        return normalize(sources);
+        List<File> r = new ArrayList<File>();
+		if(sourceDir.exists())
+			r.add(normalize(sourceDir));
+		return r;
     }
 
     /**
@@ -191,13 +188,11 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
         long t0 = System.currentTimeMillis();
 
         //the classpath
-		Set<String> classpath = new HashSet<String>();
-		addYetiLibToClassPath(classpath);
-		classpath.addAll(getClasspathElements());
+		Set<String> classpath = 
+			new HashSet<String>(getClasspathElements());
 
 		//the sourcedirs and files
         List<File> sourceDirs = getSourceDirectories();
-        
         
         List<String> sourceFiles = findSourceFiles(sourceDirs);
 
@@ -217,22 +212,21 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             }
         }
 
-        getLog().info(String.format("Compiling %d source files to %s at %d", 
-					sourceFilesC.size(), outputDir.getAbsolutePath(), t1));
+        getLog().info(String.format("Compiling %d source files to %s at %s %s ", 
+					sourceFiles.size(), outputDir.getAbsolutePath(),
+					sourceFiles,
+					sourceDirs));
 
 	
 		List<String> params = new ArrayList<String>();
 		params.add("-d");
 		params.add(toPath);
-		params.addAll(sourceDirs);
 		params.addAll(sourceFiles);
+		for(File f:sourceDirs)params.add(f.getPath());
 
 		invokeYeti(classpath, params.toArray(new String[params.size()]));
 
         getLog().info(String.format("compile in %d s", 
 					(System.currentTimeMillis() - t0) / 1000));
-
     }
-
-
 }
