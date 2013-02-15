@@ -357,7 +357,7 @@
                             <properties>
                                 <yeti.version.lastrelease>0.9.8-SNAPSHOT</yeti.version.lastrelease>
                             </properties>
-                            <debug>true</debug>
+                            <debug>false</debug>
 							<showErrors>true</showErrors>
                             <streamLogs>false</streamLogs>
                             <projectsDirectory>src/it</projectsDirectory>
