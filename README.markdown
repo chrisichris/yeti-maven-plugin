@@ -9,7 +9,8 @@ The code of this plugin is heavily based on the mavan-scala-plugin. Thanks to th
 
 ## Getting started with Yeti and Maven - the fastes way
 
-The easiest way to get started is to git clone the yeti-maven-template-project.
+The easiest way to get started is to git clone the 
+yeti-maven-template-project at (https://github.com/chrisichris/yeti-maven-template-project)
 
 Change update the pom with your project info and than run `mvn compile` to test
 wheter everything is working.
