@@ -220,14 +220,10 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
 
-    protected void prepareIncludes(Set<String> includes, 
-									boolean sendJavaToYetic) {
+    protected void prepareIncludes(Set<String> includes) {
         if (includes.isEmpty()) {
             includes.add("**/*.yeti");
-
-            //if (sendJavaToYetic) {
-            //    includes.add("**/*.java");
-            //}
+			includes.add("**/*.java");
         }
     }
 

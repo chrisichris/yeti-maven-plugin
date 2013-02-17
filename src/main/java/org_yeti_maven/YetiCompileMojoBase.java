@@ -43,12 +43,6 @@ import org_yeti_maven_executions.MainHelper;
  */
 public class YetiCompileMojoBase extends YetiMojoSupport {
 
-    /**
-     * Enables/Disables sending java source to the yeti compiler.
-     *
-     * @parameter default-value="false"
-     */
-    protected boolean sendJavaToYetic = false;
 
 
     /**
@@ -161,7 +155,7 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             List<String> sourceFiles = new ArrayList<String>();
 
             //make sure filter is ok
-            prepareIncludes(includes, sendJavaToYetic);
+            prepareIncludes(includes);
             for (File dir : sourceRootDirs) {
                 String[] tmpFiles = 
 					MainHelper.findFiles(dir, 
