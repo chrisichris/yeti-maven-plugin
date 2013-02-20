@@ -46,31 +46,6 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
 
 
     /**
-     * A list of inclusion filters for the compiler.
-     * ex :
-     * <pre>
-     *    &lt;includes&gt;
-     *      &lt;include&gt;someFile.yeti&lt;/include&gt;
-     *    &lt;/includes&gt;
-     * </pre>
-     *
-     * @parameter
-     */
-    protected Set<String> includes = new HashSet<String>();
-
-    /**
-     * A list of exclusion filters for the compiler.
-     * ex :
-     * <pre>
-     *    &lt;excludes&gt;
-     *      &lt;exclude&gt;someBadFile.yeti&lt;/exclude&gt;
-     *    &lt;/excludes&gt;
-     * </pre>
-     *
-     * @parameter
-     */
-    protected Set<String> excludes = new HashSet<String>();
-    /**
      * The directory in which to place compilation output
      *
      * @parameter expression="${project.build.outputDirectory}"
@@ -155,12 +130,11 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
             List<String> sourceFiles = new ArrayList<String>();
 
             //make sure filter is ok
-            prepareIncludes(includes);
             for (File dir : sourceRootDirs) {
                 String[] tmpFiles = 
 					MainHelper.findFiles(dir, 
-							includes.toArray(new String[includes.size()]), 
-							excludes.toArray(new String[excludes.size()]));
+							INCLUDES,
+							new String[]{});
                 for (String tmpLocalFile : tmpFiles) {
                     File fl = new File(dir,tmpLocalFile);
 					if (fl.exists())

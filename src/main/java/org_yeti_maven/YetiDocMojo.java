@@ -115,30 +115,6 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
      * @parameter default-value="false"
      */
     protected boolean sendJavaToYetic = false;
-    /**
-     * A list of inclusion filters for the compiler.
-     * ex :
-     * <pre>
-     *    &lt;includes&gt;
-     *      &lt;include&gt;SomeFile.yeti&lt;/include&gt;
-     *    &lt;/includes&gt;
-     * </pre>
-     *
-     * @parameter
-     */
-    protected Set<String> includes = new HashSet<String>();
-    /**
-     * A list of exclusion filters for the compiler.
-     * ex :
-     * <pre>
-     *    &lt;excludes&gt;
-     *      &lt;exclude&gt;SomeBadFile.yeti&lt;/exclude&gt;
-     *    &lt;/excludes&gt;
-     * </pre>
-     *
-     * @parameter
-     */
-    protected Set<String> excludes = new HashSet<String>();
     private List<String> _sourceFiles;
     private boolean _filterPrinted = false;
 
@@ -150,9 +126,6 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
 		return sources;
 	}
 
-    protected void initFilters() throws Exception {
-        prepareIncludes(includes, sendJavaToYetic);
-    }
 
     /**
      * @return
@@ -163,13 +136,12 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
             try {
                 List<String> sourceFiles = new ArrayList<String>();
                 List<File> sourceRootDirs = getSourceDirectories();
-                initFilters();
 
                 for (File dir : sourceRootDirs) {
                     String[] files = 
 						MainHelper.findFiles(dir, 
-								includes.toArray(new String[includes.size()]), 
-								excludes.toArray(new String[excludes.size()]));
+								INCLUDES,
+								new String[]{});
                     for (String fileN : files) {
                         File file = new File(dir,fileN);
 						if (file.exists()) {

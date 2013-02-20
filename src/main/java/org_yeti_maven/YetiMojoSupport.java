@@ -60,6 +60,9 @@ public abstract class YetiMojoSupport extends AbstractMojo {
     public static final String YETI_LIB_ARTIFACTID= "yeti-lib";
     public static final String YETI_MAVEN_ARTIFACTID="yeti-maven-plugin";
     public static final String YETI_MAVEN_VERSION="0.2-SNAPSHOT";
+	public static final String[] INCLUDES = 
+		new String[]{"**/*.yeti","**/*.java"};
+
     //public static final String YETICL_ARTIFACTID="yeticl";
     //public static final String YETICL_VERSION="0.2-SNAPSHOT";
 
@@ -220,12 +223,6 @@ public abstract class YetiMojoSupport extends AbstractMojo {
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
 
-    protected void prepareIncludes(Set<String> includes) {
-        if (includes.isEmpty()) {
-            includes.add("**/*.yeti");
-			includes.add("**/*.java");
-        }
-    }
 
     /**
      * This method resolves the dependency artifacts from the project.
