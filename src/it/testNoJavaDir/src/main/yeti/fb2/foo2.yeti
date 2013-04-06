@@ -1,0 +1,4 @@
+/// put module documentation here
+module fb2.foo2;
+
+3 + 3;

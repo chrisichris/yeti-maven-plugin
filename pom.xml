@@ -32,13 +32,13 @@
 		<developerConnection>
 			scm:git:git@github.com:chrisichris/${project.artifactId}.git
 		</developerConnection>
-        <url>http://github.com/chrisichris/${project.artifactId}/</url>
+        <url>https://github.com/chrisichris/${project.artifactId}/</url>
     </scm>
 
     <issueManagement>
         <system>github</system>
 		<url>
-			http://github.com/chrisichris/${project.artifactId}/issues#issue/
+			https://github.com/chrisichris/yeti-maven-plugin/issues	
 		</url>
     </issueManagement>
 

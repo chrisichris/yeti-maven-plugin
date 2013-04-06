@@ -116,8 +116,11 @@ public class YetiCompileMojoBase extends YetiMojoSupport {
     @SuppressWarnings("unchecked")
     protected List<File> getSourceDirectories() throws Exception {
         List<File> r = new ArrayList<File>();
-		if(sourceDir.exists())
-			r.add(normalize(sourceDir));
+		File sd = sourceDir;
+		if(! sd.exists())
+			sd = new File("src/main/yeti");
+		if(sd.exists())
+			r.add(normalize(sd));
 		return r;
     }
 

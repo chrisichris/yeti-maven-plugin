@@ -121,8 +121,12 @@ public class YetiDocMojo extends YetiMojoSupport implements MavenReport {
     @SuppressWarnings("unchecked")
     protected List<File> getSourceDirectories() throws Exception {
         List<File> sources = new ArrayList<File>();
-		if(sourceDir.exists())
-			sources.add(sourceDir);
+		File sd = sourceDir;
+		if(! sd.exists())
+			sd = new File("src/main/yeti");
+		if(sd.exists())
+			sources.add(sd);
+		
 		return sources;
 	}
 
